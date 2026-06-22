@@ -44,3 +44,22 @@ export async function POST(request: NextRequest) {
 
   return successResponse(newItem, "Item created successfully", 201);
 }
+
+export async function DELETE(request: NextRequest) {
+  const body = await request.json();
+  const { id } = body;
+
+  if (id === undefined || id === null) {
+    return errorResponse("id is required", 400);
+  }
+
+  const index = wacBodyItems.findIndex((i) => i.id === id);
+
+  if (index === -1) {
+    return errorResponse(`Item with id ${id} not found`, 404);
+  }
+
+  const [deleted] = wacBodyItems.splice(index, 1);
+
+  return successResponse(deleted, "Item deleted successfully");
+}

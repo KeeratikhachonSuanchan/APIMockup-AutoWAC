@@ -1,3 +1,47 @@
+const wacBodyExample = {
+  id: 1,
+  rowNo: 1,
+  rawCode: "108009",
+  rawName: "ปลากะพงขาวแช่แข็ง ไซส์ M กก.ละ",
+  dcCuttingCode: "837744",
+  dcName: "ARO ปลากะพงขาวแล่แช่แข็ง ไซส์ M กก.ละ",
+  supplierCode: "20047",
+  oldWAC: 142.5,
+  newWAC: 145,
+  variableCost: 4.1,
+  tempVariableCost: 4.1,
+  oldCost: 146.6,
+  newCost: 149.1,
+  isEdit: false,
+};
+
+const wacBodyLogExample = {
+  requestNo: "WAC_20260514000001",
+  timestamp: "2026-05-14 09:34:21",
+  rawCode: "108009",
+  rawName: "ปลากะพงขาวแช่แข็ง ไซส์ M กก.ละ",
+  dcCuttingCode: "837744",
+  dcName: "ARO ปลากะพงขาวแล่แช่แข็ง ไซส์ M กก.ละ",
+  supplierCode: "20047",
+  supplierName: "Thai Union Frozen",
+  poNo: "PO-2605-00482",
+  oldWAC: 142.5,
+  newWAC: 145,
+  variableCost: 4.1,
+  oldCost: 146.6,
+  newCost: 149.1,
+  status: "success",
+};
+
+const paginationExample = {
+  page: 1,
+  limit: 20,
+  totalItems: 8,
+  totalPages: 1,
+  hasNext: false,
+  hasPrevious: false,
+};
+
 export const swaggerSpec = {
   openapi: "3.0.0",
   info: {
@@ -29,7 +73,7 @@ export const swaggerSpec = {
             description: "สำเร็จ",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ApiResponse" },
+                schema: { $ref: "#/components/schemas/WACSearchResponse" },
               },
             },
           },
@@ -53,11 +97,41 @@ export const swaggerSpec = {
             description: "สร้างสำเร็จ",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ApiResponse" },
+                schema: { $ref: "#/components/schemas/WACItemResponse" },
               },
             },
           },
           400: { description: "ข้อมูลไม่ครบ" },
+        },
+      },
+      delete: {
+        tags: ["Auto WAC"],
+        summary: "ลบข้อมูล WAC",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["id"],
+                properties: {
+                  id: { type: "integer", example: 1 },
+                },
+              },
+            },
+          },
+        },
+        responses: {
+          200: {
+            description: "ลบสำเร็จ",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/WACItemResponse" },
+              },
+            },
+          },
+          400: { description: "id is required" },
+          404: { description: "ไม่พบ item" },
         },
       },
     },
@@ -85,37 +159,11 @@ export const swaggerSpec = {
             description: "แก้ไขสำเร็จ",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ApiResponse" },
+                schema: { $ref: "#/components/schemas/WACItemResponse" },
               },
             },
           },
-          400: { description: "VariableCost is required" },
-          404: { description: "ไม่พบ item" },
-        },
-      },
-    },
-    "/api/wac/{id}": {
-      delete: {
-        tags: ["Auto WAC"],
-        summary: "ลบข้อมูล WAC",
-        parameters: [
-          {
-            name: "id",
-            in: "path",
-            required: true,
-            schema: { type: "integer" },
-            description: "Id ของ item",
-          },
-        ],
-        responses: {
-          200: {
-            description: "ลบสำเร็จ",
-            content: {
-              "application/json": {
-                schema: { $ref: "#/components/schemas/ApiResponse" },
-              },
-            },
-          },
+          400: { description: "variableCost is required" },
           404: { description: "ไม่พบ item" },
         },
       },
@@ -143,7 +191,7 @@ export const swaggerSpec = {
             description: "สำเร็จ",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/ApiResponse" },
+                schema: { $ref: "#/components/schemas/WACLogSearchResponse" },
               },
             },
           },
@@ -199,21 +247,12 @@ export const swaggerSpec = {
       PaginationOutput: {
         type: "object",
         properties: {
-          page: { type: "integer" },
-          limit: { type: "integer" },
-          totalItems: { type: "integer" },
-          totalPages: { type: "integer" },
-          hasNext: { type: "boolean" },
-          hasPrevious: { type: "boolean" },
-        },
-      },
-      ApiResponse: {
-        type: "object",
-        properties: {
-          success: { type: "boolean" },
-          message: { type: "string" },
-          data: { type: "object" },
-          error: { type: "string", nullable: true },
+          page: { type: "integer", example: 1 },
+          limit: { type: "integer", example: 20 },
+          totalItems: { type: "integer", example: 8 },
+          totalPages: { type: "integer", example: 1 },
+          hasNext: { type: "boolean", example: false },
+          hasPrevious: { type: "boolean", example: false },
         },
       },
       WACFilter: {
@@ -221,7 +260,8 @@ export const swaggerSpec = {
         properties: {
           searchKeyword: {
             type: "string",
-            description: "ค้นหาด้วย RawCode, RawName, DCCuttingCode, DCName, SupplierCode",
+            description:
+              "ค้นหาด้วย rawCode, rawName, dcCuttingCode, dcName, supplierCode",
           },
         },
       },
@@ -230,7 +270,8 @@ export const swaggerSpec = {
         properties: {
           searchKeyword: {
             type: "string",
-            description: "ค้นหาด้วย RequestNo, SupplierCode, SupplierName, PONo, Status",
+            description:
+              "ค้นหาด้วย requestNo, supplierCode, supplierName, poNo, status",
           },
           dateFrom: {
             type: "string",
@@ -246,27 +287,28 @@ export const swaggerSpec = {
           },
           itemSearchKeyword: {
             type: "string",
-            description: "ค้นหาด้วย RawCode, RawName, DCCuttingCode, DCName",
+            description:
+              "ค้นหาด้วย rawCode, rawName, dcCuttingCode, dcName",
           },
         },
       },
       WACBody: {
         type: "object",
         properties: {
-          id: { type: "integer" },
-          rowNo: { type: "integer" },
-          rawCode: { type: "string" },
-          rawName: { type: "string" },
-          dcCuttingCode: { type: "string" },
-          dcName: { type: "string" },
-          supplierCode: { type: "string" },
-          oldWAC: { type: "number" },
-          newWAC: { type: "number" },
-          variableCost: { type: "number" },
-          tempVariableCost: { type: "number" },
-          oldCost: { type: "number" },
-          newCost: { type: "number" },
-          isEdit: { type: "boolean" },
+          id: { type: "integer", example: 1 },
+          rowNo: { type: "integer", example: 1 },
+          rawCode: { type: "string", example: "108009" },
+          rawName: { type: "string", example: "ปลากะพงขาวแช่แข็ง ไซส์ M กก.ละ" },
+          dcCuttingCode: { type: "string", example: "837744" },
+          dcName: { type: "string", example: "ARO ปลากะพงขาวแล่แช่แข็ง ไซส์ M กก.ละ" },
+          supplierCode: { type: "string", example: "20047" },
+          oldWAC: { type: "number", example: 142.5 },
+          newWAC: { type: "number", example: 145 },
+          variableCost: { type: "number", example: 4.1 },
+          tempVariableCost: { type: "number", example: 4.1 },
+          oldCost: { type: "number", example: 146.6 },
+          newCost: { type: "number", example: 149.1 },
+          isEdit: { type: "boolean", example: false },
         },
       },
       WACCreateInput: {
@@ -286,24 +328,101 @@ export const swaggerSpec = {
       WACBodyLog: {
         type: "object",
         properties: {
-          requestNo: { type: "string" },
-          timestamp: { type: "string" },
-          rawCode: { type: "string" },
-          rawName: { type: "string" },
-          dcCuttingCode: { type: "string" },
-          dcName: { type: "string" },
-          supplierCode: { type: "string" },
-          supplierName: { type: "string" },
-          poNo: { type: "string" },
-          oldWAC: { type: "number" },
-          newWAC: { type: "number" },
-          variableCost: { type: "number" },
-          oldCost: { type: "number" },
-          newCost: { type: "number" },
-          status: {
-            type: "string",
-            enum: ["success", "pending", "failed"],
+          requestNo: { type: "string", example: "WAC_20260514000001" },
+          timestamp: { type: "string", example: "2026-05-14 09:34:21" },
+          rawCode: { type: "string", example: "108009" },
+          rawName: { type: "string", example: "ปลากะพงขาวแช่แข็ง ไซส์ M กก.ละ" },
+          dcCuttingCode: { type: "string", example: "837744" },
+          dcName: { type: "string", example: "ARO ปลากะพงขาวแล่แช่แข็ง ไซส์ M กก.ละ" },
+          supplierCode: { type: "string", example: "20047" },
+          supplierName: { type: "string", example: "Thai Union Frozen" },
+          poNo: { type: "string", example: "PO-2605-00482" },
+          oldWAC: { type: "number", example: 142.5 },
+          newWAC: { type: "number", example: 145 },
+          variableCost: { type: "number", example: 4.1 },
+          oldCost: { type: "number", example: 146.6 },
+          newCost: { type: "number", example: 149.1 },
+          status: { type: "string", enum: ["success", "pending", "failed"], example: "success" },
+        },
+      },
+      WACSearchResponse: {
+        type: "object",
+        properties: {
+          success: { type: "boolean", example: true },
+          message: { type: "string", example: "Success" },
+          data: {
+            type: "object",
+            properties: {
+              items: {
+                type: "array",
+                items: { $ref: "#/components/schemas/WACBody" },
+              },
+              variableCost: { type: "number", example: 4.1 },
+              pagination: { $ref: "#/components/schemas/PaginationOutput" },
+            },
           },
+          error: { type: "string", nullable: true, example: null },
+        },
+        example: {
+          success: true,
+          message: "Success",
+          data: {
+            items: [wacBodyExample],
+            variableCost: 4.1,
+            pagination: paginationExample,
+          },
+          error: null,
+        },
+      },
+      WACItemResponse: {
+        type: "object",
+        properties: {
+          success: { type: "boolean", example: true },
+          message: { type: "string", example: "Item created successfully" },
+          data: { $ref: "#/components/schemas/WACBody" },
+          error: { type: "string", nullable: true, example: null },
+        },
+        example: {
+          success: true,
+          message: "Item created successfully",
+          data: wacBodyExample,
+          error: null,
+        },
+      },
+      WACLogSearchResponse: {
+        type: "object",
+        properties: {
+          success: { type: "boolean", example: true },
+          message: { type: "string", example: "Success" },
+          data: {
+            type: "object",
+            properties: {
+              items: {
+                type: "array",
+                items: { $ref: "#/components/schemas/WACBodyLog" },
+              },
+              pagination: { $ref: "#/components/schemas/PaginationOutput" },
+            },
+          },
+          error: { type: "string", nullable: true, example: null },
+        },
+        example: {
+          success: true,
+          message: "Success",
+          data: {
+            items: [wacBodyLogExample],
+            pagination: paginationExample,
+          },
+          error: null,
+        },
+      },
+      ErrorResponse: {
+        type: "object",
+        properties: {
+          success: { type: "boolean", example: false },
+          message: { type: "string", example: "Item with id 999 not found" },
+          data: { type: "object", nullable: true, example: null },
+          error: { type: "string", example: "Item with id 999 not found" },
         },
       },
     },
