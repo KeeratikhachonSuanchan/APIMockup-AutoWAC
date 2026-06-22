@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { wacBodyItems } from "@/lib/mockData";
+import { wacBodyItems, generateId } from "@/lib/mockData";
 import { paginate } from "@/lib/pagination";
 
 export async function GET(request) {
@@ -55,6 +55,7 @@ export async function POST(request) {
   }
 
   const newItem = {
+    Id: generateId(),
     RowNo: wacBodyItems.length + 1,
     RawItemNo,
     RawItemName,

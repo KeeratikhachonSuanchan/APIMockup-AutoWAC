@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { wacBodyItems } from "@/lib/mockData";
 
 export async function PATCH(request, { params }) {
-  const { rowNo } = await params;
-  const rowNoInt = parseInt(rowNo, 10);
+  const { id } = await params;
+  const idInt = parseInt(id, 10);
   const body = await request.json();
   const { VariableCost } = body;
 
@@ -14,11 +14,11 @@ export async function PATCH(request, { params }) {
     );
   }
 
-  const item = wacBodyItems.find((i) => i.RowNo === rowNoInt);
+  const item = wacBodyItems.find((i) => i.Id === idInt);
 
   if (!item) {
     return NextResponse.json(
-      { message: `Item with RowNo ${rowNoInt} not found` },
+      { message: `Item with Id ${idInt} not found` },
       { status: 404 }
     );
   }
