@@ -4,27 +4,27 @@ import { successResponse, errorResponse } from "@/lib/response";
 
 export async function PATCH(request: NextRequest) {
   const body = await request.json();
-  const { Id, VariableCost } = body;
+  const { id, variableCost } = body;
 
-  if (Id === undefined || Id === null) {
-    return errorResponse("Id is required", 400);
+  if (id === undefined || id === null) {
+    return errorResponse("id is required", 400);
   }
 
-  if (VariableCost === undefined || VariableCost === null) {
-    return errorResponse("VariableCost is required", 400);
+  if (variableCost === undefined || variableCost === null) {
+    return errorResponse("variableCost is required", 400);
   }
 
-  const item = wacBodyItems.find((i) => i.Id === Id);
+  const item = wacBodyItems.find((i) => i.id === id);
 
   if (!item) {
-    return errorResponse(`Item with Id ${Id} not found`, 404);
+    return errorResponse(`Item with id ${id} not found`, 404);
   }
 
-  item.TempVariableCost = item.VariableCost;
-  item.VariableCost = VariableCost;
-  item.OldCost = Math.round((item.OldWAC + VariableCost) * 100) / 100;
-  item.NewCost = Math.round((item.NewWAC + VariableCost) * 100) / 100;
-  item.IsEdit = true;
+  item.tempVariableCost = item.variableCost;
+  item.variableCost = variableCost;
+  item.oldCost = Math.round((item.oldWAC + variableCost) * 100) / 100;
+  item.newCost = Math.round((item.newWAC + variableCost) * 100) / 100;
+  item.isEdit = true;
 
   return successResponse(item, "VariableCost updated successfully");
 }

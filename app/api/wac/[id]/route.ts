@@ -9,10 +9,10 @@ export async function DELETE(
   const { id } = await params;
   const idInt = parseInt(id, 10);
 
-  const index = wacBodyItems.findIndex((i) => i.Id === idInt);
+  const index = wacBodyItems.findIndex((i) => i.id === idInt);
 
   if (index === -1) {
-    return errorResponse(`Item with Id ${idInt} not found`, 404);
+    return errorResponse(`Item with id ${idInt} not found`, 404);
   }
 
   const [deleted] = wacBodyItems.splice(index, 1);

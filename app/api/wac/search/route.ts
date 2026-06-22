@@ -17,16 +17,16 @@ export async function POST(request: NextRequest) {
   if (keyword) {
     filtered = filtered.filter(
       (item) =>
-        item.RawCode.toLowerCase().includes(keyword) ||
-        item.RawName.toLowerCase().includes(keyword) ||
-        item.DCCuttingCode.toLowerCase().includes(keyword) ||
-        item.DCName.toLowerCase().includes(keyword) ||
-        item.SupplierCode.toLowerCase().includes(keyword)
+        item.rawCode.toLowerCase().includes(keyword) ||
+        item.rawName.toLowerCase().includes(keyword) ||
+        item.dcCuttingCode.toLowerCase().includes(keyword) ||
+        item.dcName.toLowerCase().includes(keyword) ||
+        item.supplierCode.toLowerCase().includes(keyword)
     );
   }
 
   const { data, pagination } = paginate(filtered, paginationInput);
-  const variableCost = data.reduce((sum, item) => sum + item.VariableCost, 0);
+  const variableCost = data.reduce((sum, item) => sum + item.variableCost, 0);
 
   return successResponse({
     items: data,

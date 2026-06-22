@@ -23,33 +23,33 @@ export async function POST(request: NextRequest) {
   if (keyword) {
     filtered = filtered.filter(
       (item) =>
-        item.RequestNo.toLowerCase().includes(keyword) ||
-        item.SupplierCode.toLowerCase().includes(keyword) ||
-        item.SupplierName.toLowerCase().includes(keyword) ||
-        item.PONo.toLowerCase().includes(keyword) ||
-        item.Status.toLowerCase().includes(keyword)
+        item.requestNo.toLowerCase().includes(keyword) ||
+        item.supplierCode.toLowerCase().includes(keyword) ||
+        item.supplierName.toLowerCase().includes(keyword) ||
+        item.poNo.toLowerCase().includes(keyword) ||
+        item.status.toLowerCase().includes(keyword)
     );
   }
 
   if (itemKeyword) {
     filtered = filtered.filter(
       (item) =>
-        item.RawCode.toLowerCase().includes(itemKeyword) ||
-        item.RawName.toLowerCase().includes(itemKeyword) ||
-        item.DCCuttingCode.toLowerCase().includes(itemKeyword) ||
-        item.DCName.toLowerCase().includes(itemKeyword)
+        item.rawCode.toLowerCase().includes(itemKeyword) ||
+        item.rawName.toLowerCase().includes(itemKeyword) ||
+        item.dcCuttingCode.toLowerCase().includes(itemKeyword) ||
+        item.dcName.toLowerCase().includes(itemKeyword)
     );
   }
 
   if (dateFrom) {
     const from = new Date(dateFrom);
-    filtered = filtered.filter((item) => new Date(item.Timestamp) >= from);
+    filtered = filtered.filter((item) => new Date(item.timestamp) >= from);
   }
 
   if (dateTo) {
     const to = new Date(dateTo);
     to.setHours(23, 59, 59, 999);
-    filtered = filtered.filter((item) => new Date(item.Timestamp) <= to);
+    filtered = filtered.filter((item) => new Date(item.timestamp) <= to);
   }
 
   const { data, pagination } = paginate(filtered, paginationInput);

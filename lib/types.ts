@@ -1,36 +1,36 @@
 export interface WACBodyItem {
-  Id: number;
-  RowNo: number;
-  RawCode: string;
-  RawName: string;
-  DCCuttingCode: string;
-  DCName: string;
-  SupplierCode: string;
-  OldWAC: number;
-  NewWAC: number;
-  VariableCost: number;
-  TempVariableCost: number;
-  OldCost: number;
-  NewCost: number;
-  IsEdit: boolean;
+  id: number;
+  rowNo: number;
+  rawCode: string;
+  rawName: string;
+  dcCuttingCode: string;
+  dcName: string;
+  supplierCode: string;
+  oldWAC: number;
+  newWAC: number;
+  variableCost: number;
+  tempVariableCost: number;
+  oldCost: number;
+  newCost: number;
+  isEdit: boolean;
 }
 
 export interface WACBodyLogItem {
-  RequestNo: string;
-  Timestamp: string;
-  RawCode: string;
-  RawName: string;
-  DCCuttingCode: string;
-  DCName: string;
-  SupplierCode: string;
-  SupplierName: string;
-  PONo: string;
-  OldWAC: number;
-  NewWAC: number;
-  VariableCost: number;
-  OldCost: number;
-  NewCost: number;
-  Status: "success" | "pending" | "failed";
+  requestNo: string;
+  timestamp: string;
+  rawCode: string;
+  rawName: string;
+  dcCuttingCode: string;
+  dcName: string;
+  supplierCode: string;
+  supplierName: string;
+  poNo: string;
+  oldWAC: number;
+  newWAC: number;
+  variableCost: number;
+  oldCost: number;
+  newCost: number;
+  status: "success" | "pending" | "failed";
 }
 
 export interface PaginationInput {

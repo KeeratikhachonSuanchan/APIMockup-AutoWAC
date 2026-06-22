@@ -21,54 +21,54 @@ export async function POST(request: NextRequest) {
   if (keyword) {
     filtered = filtered.filter(
       (item) =>
-        item.RequestNo.toLowerCase().includes(keyword) ||
-        item.SupplierCode.toLowerCase().includes(keyword) ||
-        item.SupplierName.toLowerCase().includes(keyword) ||
-        item.PONo.toLowerCase().includes(keyword) ||
-        item.Status.toLowerCase().includes(keyword)
+        item.requestNo.toLowerCase().includes(keyword) ||
+        item.supplierCode.toLowerCase().includes(keyword) ||
+        item.supplierName.toLowerCase().includes(keyword) ||
+        item.poNo.toLowerCase().includes(keyword) ||
+        item.status.toLowerCase().includes(keyword)
     );
   }
 
   if (itemKeyword) {
     filtered = filtered.filter(
       (item) =>
-        item.RawCode.toLowerCase().includes(itemKeyword) ||
-        item.RawName.toLowerCase().includes(itemKeyword) ||
-        item.DCCuttingCode.toLowerCase().includes(itemKeyword) ||
-        item.DCName.toLowerCase().includes(itemKeyword)
+        item.rawCode.toLowerCase().includes(itemKeyword) ||
+        item.rawName.toLowerCase().includes(itemKeyword) ||
+        item.dcCuttingCode.toLowerCase().includes(itemKeyword) ||
+        item.dcName.toLowerCase().includes(itemKeyword)
     );
   }
 
   if (dateFrom) {
     const from = new Date(dateFrom);
-    filtered = filtered.filter((item) => new Date(item.Timestamp) >= from);
+    filtered = filtered.filter((item) => new Date(item.timestamp) >= from);
   }
 
   if (dateTo) {
     const to = new Date(dateTo);
     to.setHours(23, 59, 59, 999);
-    filtered = filtered.filter((item) => new Date(item.Timestamp) <= to);
+    filtered = filtered.filter((item) => new Date(item.timestamp) <= to);
   }
 
   const workbook = new ExcelJS.Workbook();
   const sheet = workbook.addWorksheet("Transaction Log");
 
   sheet.columns = [
-    { header: "Request No.", key: "RequestNo", width: 22 },
-    { header: "Timestamp", key: "Timestamp", width: 22 },
-    { header: "RAW code", key: "RawCode", width: 12 },
-    { header: "RAW name", key: "RawName", width: 35 },
-    { header: "DC Cutting code", key: "DCCuttingCode", width: 16 },
-    { header: "DC name", key: "DCName", width: 40 },
-    { header: "Supplier code", key: "SupplierCode", width: 14 },
-    { header: "Supplier name", key: "SupplierName", width: 28 },
-    { header: "PO No.", key: "PONo", width: 18 },
-    { header: "Old WAC", key: "OldWAC", width: 12 },
-    { header: "New WAC", key: "NewWAC", width: 12 },
-    { header: "Variable cost", key: "VariableCost", width: 14 },
-    { header: "Old cost", key: "OldCost", width: 12 },
-    { header: "New cost", key: "NewCost", width: 12 },
-    { header: "Status", key: "Status", width: 12 },
+    { header: "Request No.", key: "requestNo", width: 22 },
+    { header: "Timestamp", key: "timestamp", width: 22 },
+    { header: "RAW code", key: "rawCode", width: 12 },
+    { header: "RAW name", key: "rawName", width: 35 },
+    { header: "DC Cutting code", key: "dcCuttingCode", width: 16 },
+    { header: "DC name", key: "dcName", width: 40 },
+    { header: "Supplier code", key: "supplierCode", width: 14 },
+    { header: "Supplier name", key: "supplierName", width: 28 },
+    { header: "PO No.", key: "poNo", width: 18 },
+    { header: "Old WAC", key: "oldWAC", width: 12 },
+    { header: "New WAC", key: "newWAC", width: 12 },
+    { header: "Variable cost", key: "variableCost", width: 14 },
+    { header: "Old cost", key: "oldCost", width: 12 },
+    { header: "New cost", key: "newCost", width: 12 },
+    { header: "Status", key: "status", width: 12 },
   ];
 
   sheet.getRow(1).font = { bold: true };
