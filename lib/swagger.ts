@@ -36,6 +36,7 @@ const wacBodyLogExample = {
 const paginationExample = {
   page: 1,
   limit: 20,
+  offset: 0,
   totalItems: 8,
   totalPages: 1,
   hasNext: false,
@@ -245,6 +246,7 @@ export const swaggerSpec = {
         properties: {
           page: { type: "integer", example: 1 },
           limit: { type: "integer", example: 20 },
+          offset: { type: "integer", example: 0 },
           totalItems: { type: "integer", example: 8 },
           totalPages: { type: "integer", example: 1 },
           hasNext: { type: "boolean", example: false },

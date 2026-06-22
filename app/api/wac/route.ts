@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { wacBodyItems, generateId } from "@/lib/mockData";
+import { wacBodyItems, generateId, addTransactionLog } from "@/lib/mockData";
 import { successResponse, errorResponse } from "@/lib/response";
 
 export async function POST(request: NextRequest) {
@@ -13,6 +13,8 @@ export async function POST(request: NextRequest) {
     oldWAC,
     newWAC,
     variableCost: vc,
+    supplierName,
+    poNo,
   } = body;
 
   if (!rawCode || !rawName) {
@@ -40,6 +42,7 @@ export async function POST(request: NextRequest) {
   };
 
   wacBodyItems.push(newItem);
+  addTransactionLog(newItem, supplierName ?? "", poNo ?? "", "success");
 
   return successResponse(newItem, "Item created successfully", 201);
 }

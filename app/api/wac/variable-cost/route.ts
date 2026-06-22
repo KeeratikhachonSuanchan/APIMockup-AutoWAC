@@ -1,5 +1,5 @@
 import type { NextRequest } from "next/server";
-import { wacBodyItems } from "@/lib/mockData";
+import { wacBodyItems, addTransactionLog } from "@/lib/mockData";
 import { successResponse, errorResponse } from "@/lib/response";
 
 export async function PATCH(request: NextRequest) {
@@ -25,6 +25,7 @@ export async function PATCH(request: NextRequest) {
   item.oldCost = Math.round((item.oldWAC + variableCost) * 100) / 100;
   item.newCost = Math.round((item.newWAC + variableCost) * 100) / 100;
   item.isEdit = true;
+  addTransactionLog(item, "", "", "success");
 
   return successResponse(item, "VariableCost updated successfully");
 }
