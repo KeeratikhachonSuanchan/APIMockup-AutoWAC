@@ -1,71 +1,45 @@
 import { NextResponse } from "next/server";
 import { wacBodyItems, generateId } from "@/lib/mockData";
-import { paginate } from "@/lib/pagination";
-
-export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const SearchKey = searchParams.get("SearchKey") || "";
-  const page = parseInt(searchParams.get("Page") || "1", 10);
-  const limit = parseInt(searchParams.get("Limit") || "10", 10);
-  const searchKey = SearchKey.toLowerCase();
-
-  let filtered = [...wacBodyItems];
-
-  if (searchKey) {
-    filtered = filtered.filter(
-      (item) =>
-        item.RawItemNo.toLowerCase().includes(searchKey) ||
-        item.RawItemName.toLowerCase().includes(searchKey) ||
-        item.DCItemNo.toLowerCase().includes(searchKey) ||
-        item.DCItemName.toLowerCase().includes(searchKey) ||
-        item.SupplierCode.toLowerCase().includes(searchKey)
-    );
-  }
-
-  const { data, pagination } = paginate(filtered, page, limit);
-  const variableCost = data.reduce((sum, item) => sum + item.VariableCost, 0);
-
-  return NextResponse.json({
-    SearchKey: SearchKey || null,
-    VariableCost: Math.round(variableCost * 100) / 100,
-    Items: data,
-    Pagination: pagination,
-  });
-}
 
 export async function POST(request) {
   const body = await request.json();
   const {
-    RawItemNo,
-    RawItemName,
-    RawWAC,
-    DCItemNo,
-    DCItemName,
+    RawCode,
+    RawName,
+    DCCuttingCode,
+    DCName,
     SupplierCode,
     SupplierName,
+    OldWAC,
+    NewWAC,
     VariableCost,
-    NewUnitCost,
   } = body;
 
-  if (!RawItemNo || !RawItemName) {
+  if (!RawCode || !RawName) {
     return NextResponse.json(
-      { message: "RawItemNo and RawItemName are required" },
+      { message: "RawCode and RawName are required" },
       { status: 400 }
     );
   }
 
+  const oldWAC = OldWAC ?? 0;
+  const newWAC = NewWAC ?? 0;
+  const variableCost = VariableCost ?? 0;
+
   const newItem = {
     Id: generateId(),
     RowNo: wacBodyItems.length + 1,
-    RawItemNo,
-    RawItemName,
-    RawWAC: RawWAC ?? 0,
-    DCItemNo: DCItemNo ?? "",
-    DCItemName: DCItemName ?? "",
+    RawCode,
+    RawName,
+    DCCuttingCode: DCCuttingCode ?? "",
+    DCName: DCName ?? "",
     SupplierCode: SupplierCode ?? "",
-    VariableCost: VariableCost ?? 0,
-    TempVariableCost: VariableCost ?? 0,
-    NewUnitCost: NewUnitCost ?? 0,
+    OldWAC: oldWAC,
+    NewWAC: newWAC,
+    VariableCost: variableCost,
+    TempVariableCost: variableCost,
+    OldCost: Math.round((oldWAC + variableCost) * 100) / 100,
+    NewCost: Math.round((newWAC + variableCost) * 100) / 100,
     IsEdit: false,
   };
 

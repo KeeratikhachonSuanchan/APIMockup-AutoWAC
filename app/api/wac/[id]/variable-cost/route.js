@@ -25,7 +25,8 @@ export async function PATCH(request, { params }) {
 
   item.TempVariableCost = item.VariableCost;
   item.VariableCost = VariableCost;
-  item.NewUnitCost = Math.round((item.RawWAC + VariableCost) * 100) / 100;
+  item.OldCost = Math.round((item.OldWAC + VariableCost) * 100) / 100;
+  item.NewCost = Math.round((item.NewWAC + VariableCost) * 100) / 100;
   item.IsEdit = true;
 
   return NextResponse.json({

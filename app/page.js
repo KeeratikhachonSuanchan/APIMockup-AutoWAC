@@ -8,8 +8,8 @@ export default function Home() {
       <h2>Endpoints</h2>
       <ul>
         <li>
-          <strong>GET</strong> /api/wac?SearchKey=&Page=1&Limit=10
-          <br />ดึงข้อมูล Auto WAC
+          <strong>POST</strong> /api/wac/search
+          <br />ดึงข้อมูล Auto WAC (body: SearchKey, Page, Limit)
         </li>
         <li>
           <strong>POST</strong> /api/wac
@@ -24,8 +24,12 @@ export default function Home() {
           <br />ลบข้อมูล WAC
         </li>
         <li>
-          <strong>GET</strong> /api/wac-log?SearchKey=&DateFrom=&DateTo=&ItemSearchKey=&Page=1&Limit=10
-          <br />ดึงข้อมูล Transaction Log
+          <strong>POST</strong> /api/wac-log/search
+          <br />ดึงข้อมูล Transaction Log (body: SearchKey, DateFrom, DateTo, ItemSearchKey, Page, Limit)
+        </li>
+        <li>
+          <strong>POST</strong> /api/wac-log/export
+          <br />Export Transaction Log เป็น Excel (body: SearchKey, DateFrom, DateTo, ItemSearchKey)
         </li>
       </ul>
     </main>

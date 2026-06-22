@@ -2,14 +2,16 @@ import { NextResponse } from "next/server";
 import { wacBodyLogItems } from "@/lib/mockData";
 import { paginate } from "@/lib/pagination";
 
-export async function GET(request) {
-  const { searchParams } = new URL(request.url);
-  const SearchKey = searchParams.get("SearchKey") || "";
-  const DateFrom = searchParams.get("DateFrom");
-  const DateTo = searchParams.get("DateTo");
-  const ItemSearchKey = searchParams.get("ItemSearchKey") || "";
-  const page = parseInt(searchParams.get("Page") || "1", 10);
-  const limit = parseInt(searchParams.get("Limit") || "10", 10);
+export async function POST(request) {
+  const body = await request.json();
+  const {
+    SearchKey = "",
+    DateFrom,
+    DateTo,
+    ItemSearchKey = "",
+    Page = 1,
+    Limit = 10,
+  } = body;
 
   const searchKey = SearchKey.toLowerCase();
   const itemSearchKey = ItemSearchKey.toLowerCase();
@@ -30,9 +32,10 @@ export async function GET(request) {
   if (itemSearchKey) {
     filtered = filtered.filter(
       (item) =>
-        item.RawItemName.toLowerCase().includes(itemSearchKey) ||
-        item.DCItemNo.toLowerCase().includes(itemSearchKey) ||
-        item.DCItemName.toLowerCase().includes(itemSearchKey)
+        item.RawCode.toLowerCase().includes(itemSearchKey) ||
+        item.RawName.toLowerCase().includes(itemSearchKey) ||
+        item.DCCuttingCode.toLowerCase().includes(itemSearchKey) ||
+        item.DCName.toLowerCase().includes(itemSearchKey)
     );
   }
 
@@ -47,7 +50,7 @@ export async function GET(request) {
     filtered = filtered.filter((item) => new Date(item.Timestamp) <= to);
   }
 
-  const { data, pagination } = paginate(filtered, page, limit);
+  const { data, pagination } = paginate(filtered, Page, Limit);
 
   return NextResponse.json({
     SearchKey: SearchKey || null,
