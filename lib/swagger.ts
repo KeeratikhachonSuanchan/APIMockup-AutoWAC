@@ -107,20 +107,16 @@ export const swaggerSpec = {
       delete: {
         tags: ["Auto WAC"],
         summary: "ลบข้อมูล WAC",
-        requestBody: {
-          required: true,
-          content: {
-            "application/json": {
-              schema: {
-                type: "object",
-                required: ["id"],
-                properties: {
-                  id: { type: "integer", example: 1 },
-                },
-              },
-            },
+        parameters: [
+          {
+            name: "wacId",
+            in: "query",
+            required: true,
+            schema: { type: "integer" },
+            description: "id ของ item ที่ต้องการลบ",
+            example: 1,
           },
-        },
+        ],
         responses: {
           200: {
             description: "ลบสำเร็จ",

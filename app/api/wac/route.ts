@@ -46,13 +46,14 @@ export async function POST(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const body = await request.json();
-  const { id } = body;
+  const { searchParams } = new URL(request.url);
+  const idParam = searchParams.get("wacId");
 
-  if (id === undefined || id === null) {
-    return errorResponse("id is required", 400);
+  if (!idParam) {
+    return errorResponse("wacId is required", 400);
   }
 
+  const id = parseInt(idParam, 10);
   const index = wacBodyItems.findIndex((i) => i.id === id);
 
   if (index === -1) {

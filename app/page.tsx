@@ -25,9 +25,9 @@ export default function Home() {
           แก้ไข VariableCost (body: Id, VariableCost)
         </li>
         <li>
-          <strong>DELETE</strong> /api/wac
+          <strong>DELETE</strong> /api/wac?wacId=1
           <br />
-          ลบข้อมูล WAC (body: id)
+          ลบข้อมูล WAC (query param: id)
         </li>
         <li>
           <strong>POST</strong> /api/wac-log/search
