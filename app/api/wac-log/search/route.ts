@@ -56,6 +56,8 @@ export async function POST(request: NextRequest) {
     filtered = filtered.filter((item) => new Date(item.timestamp) <= to);
   }
 
+  filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
   const { data, pagination } = paginate(filtered, paginationInput);
 
   const items = data.map((item, index) => ({
