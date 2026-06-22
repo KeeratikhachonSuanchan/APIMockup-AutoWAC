@@ -26,11 +26,14 @@ export async function POST(request: NextRequest) {
   }
 
   const { data, pagination } = paginate(filtered, paginationInput);
-  const variableCost = data.reduce((sum, item) => sum + item.variableCost, 0);
+
+  const items = data.map((item, index) => ({
+    ...item,
+    rowNo: pagination.offset + index + 1,
+  }));
 
   return successResponse({
-    items: data,
-    variableCost: Math.round(variableCost * 100) / 100,
+    items,
     pagination,
   });
 }

@@ -25,6 +25,7 @@ export function paginate<T>(
     pagination: {
       page: currentPage,
       limit,
+      offset: currentOffset,
       totalItems,
       totalPages,
       hasNext: currentPage < totalPages,

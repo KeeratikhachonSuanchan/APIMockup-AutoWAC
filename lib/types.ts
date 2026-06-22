@@ -1,6 +1,5 @@
 export interface WACBodyItem {
   id: number;
-  rowNo: number;
   rawCode: string;
   rawName: string;
   dcCuttingCode: string;
@@ -43,6 +42,7 @@ export interface PaginationInput {
 export interface PaginationOutput {
   page: number;
   limit: number;
+  offset: number;
   totalItems: number;
   totalPages: number;
   hasNext: boolean;

@@ -25,7 +25,6 @@ export async function POST(request: NextRequest) {
 
   const newItem = {
     id: generateId(),
-    rowNo: wacBodyItems.length + 1,
     rawCode,
     rawName,
     dcCuttingCode: dcCuttingCode ?? "",

@@ -8,7 +8,6 @@ export function generateId(): number {
 export const wacBodyItems: WACBodyItem[] = [
   {
     id: 1,
-    rowNo: 1,
     rawCode: "108009",
     rawName: "ปลากะพงขาวแช่แข็ง ไซส์ M กก.ละ",
     dcCuttingCode: "837744",
@@ -24,7 +23,6 @@ export const wacBodyItems: WACBodyItem[] = [
   },
   {
     id: 2,
-    rowNo: 2,
     rawCode: "25675",
     rawName: "ปลากะพงขาวแช่แข็ง ไซส์ L กก.ละ",
     dcCuttingCode: "837742",
@@ -40,7 +38,6 @@ export const wacBodyItems: WACBodyItem[] = [
   },
   {
     id: 3,
-    rowNo: 3,
     rawCode: "177259",
     rawName: "FZ ปลาหมึกยักษ์ กก.ละ",
     dcCuttingCode: "845124",
@@ -56,7 +53,6 @@ export const wacBodyItems: WACBodyItem[] = [
   },
   {
     id: 4,
-    rowNo: 4,
     rawCode: "841786",
     rawName: "ปลากะพงแปซิฟิก SIZE-M กก.ละ",
     dcCuttingCode: "904666",
@@ -72,7 +68,6 @@ export const wacBodyItems: WACBodyItem[] = [
   },
   {
     id: 5,
-    rowNo: 5,
     rawCode: "174495",
     rawName: "ปลาสำลีน้ำเค็มแช่แข็ง กก.ละ",
     dcCuttingCode: "993739",
@@ -88,7 +83,6 @@ export const wacBodyItems: WACBodyItem[] = [
   },
   {
     id: 6,
-    rowNo: 6,
     rawCode: "134935",
     rawName: "FZ ปีกหมึกยักษ์ กก.ละ",
     dcCuttingCode: "845125",
@@ -104,7 +98,6 @@ export const wacBodyItems: WACBodyItem[] = [
   },
   {
     id: 7,
-    rowNo: 7,
     rawCode: "20657",
     rawName: "FZ ปลากะพงญี่ปุ่น SIZE-M กก.ละ",
     dcCuttingCode: "904664",
@@ -120,7 +113,6 @@ export const wacBodyItems: WACBodyItem[] = [
   },
   {
     id: 8,
-    rowNo: 8,
     rawCode: "122990",
     rawName: "ปลาเก๋า A50-60 ตัว/กก แช่แข็ง กก.ละ",
     dcCuttingCode: "924596",
