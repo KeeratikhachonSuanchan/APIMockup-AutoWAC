@@ -12,8 +12,12 @@ export async function POST(request: NextRequest) {
 
   const oldWAC = Math.round((Math.random() * 400 + 50) * 100) / 100;
 
+  const now = new Date();
+  const timestamp = now.toISOString().slice(0, 19).replace("T", " ");
+
   const newItem = {
     id: generateId(),
+    timestamp,
     rawCode,
     rawName,
     dcCuttingCode: dcCuttingCode ?? "",

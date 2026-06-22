@@ -25,12 +25,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
   const { data, pagination } = paginate(filtered, paginationInput);
 
-  const items = data.map((item, index) => ({
-    ...item,
-    rowNo: pagination.offset + index + 1,
-  }));
+  const items = data.map((item, index) => {
+    const { timestamp: _, ...rest } = item;
+    return { ...rest, rowNo: pagination.offset + index + 1 };
+  });
 
   return successResponse({
     items,

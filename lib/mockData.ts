@@ -115,8 +115,12 @@ function buildInitialData() {
     const oldCost = newWAC;
     const newCost = newWAC;
 
+    const ts = new Date(baseDate.getTime() - i * 45 * 60 * 1000);
+    const tsStr = ts.toISOString().slice(0, 19).replace("T", " ");
+
     wacItems.push({
       id: i + 1,
+      timestamp: tsStr,
       rawCode: String(Number(p.rawCode) + Math.floor(i / products.length) * 100),
       rawName: p.rawName,
       dcCuttingCode: p.dcCuttingCode,
@@ -130,9 +134,6 @@ function buildInitialData() {
       newCost,
       isEdit: false,
     });
-
-    const ts = new Date(baseDate.getTime() - i * 45 * 60 * 1000);
-    const tsStr = ts.toISOString().slice(0, 19).replace("T", " ");
     const dateStr = ts.toISOString().slice(0, 10).replace(/-/g, "");
     const seq = String(i + 1).padStart(6, "0");
 

@@ -1,5 +1,6 @@
 export interface WACBodyItem {
   id: number;
+  timestamp: string;
   rawCode: string;
   rawName: string;
   dcCuttingCode: string;
