@@ -22,8 +22,9 @@ export async function PATCH(request: NextRequest) {
 
   item.tempVariableCost = item.variableCost;
   item.variableCost = variableCost;
-  item.oldCost = Math.round((item.oldWAC + variableCost) * 100) / 100;
-  item.newCost = Math.round((item.newWAC + variableCost) * 100) / 100;
+  item.newWAC = Math.round((item.oldWAC + variableCost) * 100) / 100;
+  item.oldCost = Math.round((item.oldWAC + item.tempVariableCost) * 100) / 100;
+  item.newCost = Math.round((item.oldWAC + variableCost) * 100) / 100;
   item.isEdit = true;
   addTransactionLog(item, "", "", "success");
 

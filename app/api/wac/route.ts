@@ -33,11 +33,11 @@ export async function POST(request: NextRequest) {
     dcName: dcName ?? "",
     supplierCode: supplierCode ?? "",
     oldWAC: oldWac,
-    newWAC: newWac,
+    newWAC: Math.round((oldWac + variableCost) * 100) / 100,
     variableCost,
-    tempVariableCost: variableCost,
+    tempVariableCost: 0,
     oldCost: Math.round((oldWac + variableCost) * 100) / 100,
-    newCost: Math.round((newWac + variableCost) * 100) / 100,
+    newCost: Math.round((oldWac + variableCost) * 100) / 100,
     isEdit: false,
   };
 
