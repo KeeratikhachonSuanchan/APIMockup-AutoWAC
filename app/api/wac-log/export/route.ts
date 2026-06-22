@@ -1,48 +1,51 @@
+import type { NextRequest } from "next/server";
 import { wacBodyLogItems } from "@/lib/mockData";
+import type { WACLogFilter } from "@/lib/types";
 import ExcelJS from "exceljs";
 
-export async function POST(request) {
-  const body = await request.json();
+export async function POST(request: NextRequest) {
+  const body: { filter?: WACLogFilter } = await request.json();
+  const { filter = {} } = body;
   const {
-    SearchKey = "",
-    DateFrom,
-    DateTo,
-    ItemSearchKey = "",
-  } = body;
+    searchKeyword = "",
+    dateFrom,
+    dateTo,
+    itemSearchKeyword = "",
+  } = filter;
 
-  const searchKey = SearchKey.toLowerCase();
-  const itemSearchKey = ItemSearchKey.toLowerCase();
+  const keyword = searchKeyword.toLowerCase();
+  const itemKeyword = itemSearchKeyword.toLowerCase();
 
   let filtered = [...wacBodyLogItems];
 
-  if (searchKey) {
+  if (keyword) {
     filtered = filtered.filter(
       (item) =>
-        item.RequestNo.toLowerCase().includes(searchKey) ||
-        item.SupplierCode.toLowerCase().includes(searchKey) ||
-        item.SupplierName.toLowerCase().includes(searchKey) ||
-        item.PONo.toLowerCase().includes(searchKey) ||
-        item.Status.toLowerCase().includes(searchKey)
+        item.RequestNo.toLowerCase().includes(keyword) ||
+        item.SupplierCode.toLowerCase().includes(keyword) ||
+        item.SupplierName.toLowerCase().includes(keyword) ||
+        item.PONo.toLowerCase().includes(keyword) ||
+        item.Status.toLowerCase().includes(keyword)
     );
   }
 
-  if (itemSearchKey) {
+  if (itemKeyword) {
     filtered = filtered.filter(
       (item) =>
-        item.RawCode.toLowerCase().includes(itemSearchKey) ||
-        item.RawName.toLowerCase().includes(itemSearchKey) ||
-        item.DCCuttingCode.toLowerCase().includes(itemSearchKey) ||
-        item.DCName.toLowerCase().includes(itemSearchKey)
+        item.RawCode.toLowerCase().includes(itemKeyword) ||
+        item.RawName.toLowerCase().includes(itemKeyword) ||
+        item.DCCuttingCode.toLowerCase().includes(itemKeyword) ||
+        item.DCName.toLowerCase().includes(itemKeyword)
     );
   }
 
-  if (DateFrom) {
-    const from = new Date(DateFrom);
+  if (dateFrom) {
+    const from = new Date(dateFrom);
     filtered = filtered.filter((item) => new Date(item.Timestamp) >= from);
   }
 
-  if (DateTo) {
-    const to = new Date(DateTo);
+  if (dateTo) {
+    const to = new Date(dateTo);
     to.setHours(23, 59, 59, 999);
     filtered = filtered.filter((item) => new Date(item.Timestamp) <= to);
   }
@@ -76,7 +79,8 @@ export async function POST(request) {
 
   return new Response(buffer, {
     headers: {
-      "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "Content-Type":
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       "Content-Disposition": "attachment; filename=transaction-log.xlsx",
     },
   });

@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { wacBodyItems, generateId } from "@/lib/mockData";
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   const body = await request.json();
   const {
     RawCode,
@@ -9,7 +9,6 @@ export async function POST(request) {
     DCCuttingCode,
     DCName,
     SupplierCode,
-    SupplierName,
     OldWAC,
     NewWAC,
     VariableCost,
@@ -22,9 +21,9 @@ export async function POST(request) {
     );
   }
 
-  const oldWAC = OldWAC ?? 0;
-  const newWAC = NewWAC ?? 0;
-  const variableCost = VariableCost ?? 0;
+  const oldWAC: number = OldWAC ?? 0;
+  const newWAC: number = NewWAC ?? 0;
+  const variableCost: number = VariableCost ?? 0;
 
   const newItem = {
     Id: generateId(),

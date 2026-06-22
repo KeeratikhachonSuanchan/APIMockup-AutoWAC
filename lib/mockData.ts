@@ -1,9 +1,11 @@
+import type { WACBodyItem, WACBodyLogItem } from "./types";
+
 let nextId = 9;
-function generateId() {
+export function generateId(): number {
   return nextId++;
 }
 
-const wacBodyItems = [
+export const wacBodyItems: WACBodyItem[] = [
   {
     Id: 1,
     RowNo: 1,
@@ -134,7 +136,7 @@ const wacBodyItems = [
   },
 ];
 
-const wacBodyLogItems = [
+export const wacBodyLogItems: WACBodyLogItem[] = [
   {
     RequestNo: "WAC_20260514000001",
     Timestamp: "2026-05-14 09:34:21",
@@ -272,5 +274,3 @@ const wacBodyLogItems = [
     Status: "success",
   },
 ];
-
-module.exports = { wacBodyItems, wacBodyLogItems, generateId };

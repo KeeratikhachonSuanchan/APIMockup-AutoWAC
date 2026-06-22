@@ -1,4 +1,4 @@
-const swaggerSpec = {
+export const swaggerSpec = {
   openapi: "3.0.0",
   info: {
     title: "WAC Mockup API",
@@ -14,7 +14,13 @@ const swaggerSpec = {
           required: true,
           content: {
             "application/json": {
-              schema: { $ref: "#/components/schemas/WACSearchInput" },
+              schema: {
+                type: "object",
+                properties: {
+                  filter: { $ref: "#/components/schemas/WACFilter" },
+                  pagination: { $ref: "#/components/schemas/PaginationInput" },
+                },
+              },
             },
           },
         },
@@ -109,7 +115,13 @@ const swaggerSpec = {
           required: true,
           content: {
             "application/json": {
-              schema: { $ref: "#/components/schemas/WACLogSearchInput" },
+              schema: {
+                type: "object",
+                properties: {
+                  filter: { $ref: "#/components/schemas/WACLogFilter" },
+                  pagination: { $ref: "#/components/schemas/PaginationInput" },
+                },
+              },
             },
           },
         },
@@ -133,7 +145,12 @@ const swaggerSpec = {
           required: true,
           content: {
             "application/json": {
-              schema: { $ref: "#/components/schemas/WACLogExportInput" },
+              schema: {
+                type: "object",
+                properties: {
+                  filter: { $ref: "#/components/schemas/WACLogFilter" },
+                },
+              },
             },
           },
         },
@@ -152,16 +169,65 @@ const swaggerSpec = {
   },
   components: {
     schemas: {
-      Pagination: {
+      PaginationInput: {
         type: "object",
         properties: {
-          Offset: { type: "integer" },
-          Limit: { type: "integer" },
-          Page: { type: "integer" },
-          TotalItems: { type: "integer" },
-          TotalPages: { type: "integer" },
-          HasNext: { type: "boolean" },
-          HasPrevious: { type: "boolean" },
+          mode: {
+            type: "string",
+            enum: ["page", "offset"],
+            default: "page",
+            description: "page = ใช้ page+limit, offset = ใช้ offset+limit",
+          },
+          page: { type: "integer", default: 1 },
+          limit: { type: "integer", default: 20 },
+          offset: { type: "integer", default: 0 },
+        },
+      },
+      PaginationOutput: {
+        type: "object",
+        properties: {
+          mode: { type: "string" },
+          page: { type: "integer" },
+          limit: { type: "integer" },
+          offset: { type: "integer" },
+          totalItems: { type: "integer" },
+          totalPages: { type: "integer" },
+          hasNext: { type: "boolean" },
+          hasPrevious: { type: "boolean" },
+        },
+      },
+      WACFilter: {
+        type: "object",
+        properties: {
+          searchKeyword: {
+            type: "string",
+            description: "ค้นหาด้วย RawCode, RawName, DCCuttingCode, DCName, SupplierCode",
+          },
+        },
+      },
+      WACLogFilter: {
+        type: "object",
+        properties: {
+          searchKeyword: {
+            type: "string",
+            description: "ค้นหาด้วย RequestNo, SupplierCode, SupplierName, PONo, Status",
+          },
+          dateFrom: {
+            type: "string",
+            format: "date",
+            description: "วันที่เริ่มต้น (YYYY-MM-DD)",
+            example: "2026-05-13",
+          },
+          dateTo: {
+            type: "string",
+            format: "date",
+            description: "วันที่สิ้นสุด (YYYY-MM-DD)",
+            example: "2026-05-14",
+          },
+          itemSearchKeyword: {
+            type: "string",
+            description: "ค้นหาด้วย RawCode, RawName, DCCuttingCode, DCName",
+          },
         },
       },
       WACBody: {
@@ -186,76 +252,13 @@ const swaggerSpec = {
       WACResponse: {
         type: "object",
         properties: {
-          SearchKey: { type: "string", nullable: true },
-          VariableCost: { type: "number" },
-          Items: {
+          filter: { $ref: "#/components/schemas/WACFilter" },
+          items: {
             type: "array",
             items: { $ref: "#/components/schemas/WACBody" },
           },
-          Pagination: { $ref: "#/components/schemas/Pagination" },
-        },
-      },
-      WACSearchInput: {
-        type: "object",
-        properties: {
-          SearchKey: {
-            type: "string",
-            description: "ค้นหาด้วย RawCode, RawName, DCCuttingCode, DCName, SupplierCode",
-          },
-          Page: { type: "integer", default: 1 },
-          Limit: { type: "integer", default: 10 },
-        },
-      },
-      WACLogSearchInput: {
-        type: "object",
-        properties: {
-          SearchKey: {
-            type: "string",
-            description: "ค้นหาด้วย RequestNo, SupplierCode, SupplierName, PONo, Status",
-          },
-          DateFrom: {
-            type: "string",
-            format: "date",
-            description: "วันที่เริ่มต้น (YYYY-MM-DD)",
-            example: "2026-05-13",
-          },
-          DateTo: {
-            type: "string",
-            format: "date",
-            description: "วันที่สิ้นสุด (YYYY-MM-DD)",
-            example: "2026-05-14",
-          },
-          ItemSearchKey: {
-            type: "string",
-            description: "ค้นหาด้วย RawCode, RawName, DCCuttingCode, DCName",
-          },
-          Page: { type: "integer", default: 1 },
-          Limit: { type: "integer", default: 10 },
-        },
-      },
-      WACLogExportInput: {
-        type: "object",
-        properties: {
-          SearchKey: {
-            type: "string",
-            description: "ค้นหาด้วย RequestNo, SupplierCode, SupplierName, PONo, Status",
-          },
-          DateFrom: {
-            type: "string",
-            format: "date",
-            description: "วันที่เริ่มต้น (YYYY-MM-DD)",
-            example: "2026-05-13",
-          },
-          DateTo: {
-            type: "string",
-            format: "date",
-            description: "วันที่สิ้นสุด (YYYY-MM-DD)",
-            example: "2026-05-14",
-          },
-          ItemSearchKey: {
-            type: "string",
-            description: "ค้นหาด้วย RawCode, RawName, DCCuttingCode, DCName",
-          },
+          variableCost: { type: "number" },
+          pagination: { $ref: "#/components/schemas/PaginationOutput" },
         },
       },
       WACCreateInput: {
@@ -298,19 +301,14 @@ const swaggerSpec = {
       WACLogResponse: {
         type: "object",
         properties: {
-          SearchKey: { type: "string", nullable: true },
-          DateFrom: { type: "string", nullable: true },
-          DateTo: { type: "string", nullable: true },
-          ItemSearchKey: { type: "string", nullable: true },
-          Items: {
+          filter: { $ref: "#/components/schemas/WACLogFilter" },
+          items: {
             type: "array",
             items: { $ref: "#/components/schemas/WACBodyLog" },
           },
-          Pagination: { $ref: "#/components/schemas/Pagination" },
+          pagination: { $ref: "#/components/schemas/PaginationOutput" },
         },
       },
     },
   },
 };
-
-module.exports = { swaggerSpec };
