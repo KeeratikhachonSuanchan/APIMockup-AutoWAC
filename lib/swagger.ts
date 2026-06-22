@@ -29,7 +29,7 @@ export const swaggerSpec = {
             description: "สำเร็จ",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/WACResponse" },
+                schema: { $ref: "#/components/schemas/ApiResponse" },
               },
             },
           },
@@ -49,32 +49,31 @@ export const swaggerSpec = {
           },
         },
         responses: {
-          201: { description: "สร้างสำเร็จ" },
+          201: {
+            description: "สร้างสำเร็จ",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiResponse" },
+              },
+            },
+          },
           400: { description: "ข้อมูลไม่ครบ" },
         },
       },
     },
-    "/api/wac/{id}/variable-cost": {
+    "/api/wac/variable-cost": {
       patch: {
         tags: ["Auto WAC"],
         summary: "แก้ไข VariableCost",
-        parameters: [
-          {
-            name: "id",
-            in: "path",
-            required: true,
-            schema: { type: "integer" },
-            description: "Id ของ item",
-          },
-        ],
         requestBody: {
           required: true,
           content: {
             "application/json": {
               schema: {
                 type: "object",
-                required: ["VariableCost"],
+                required: ["Id", "VariableCost"],
                 properties: {
+                  Id: { type: "integer", example: 1 },
                   VariableCost: { type: "number", example: 5.0 },
                 },
               },
@@ -82,7 +81,14 @@ export const swaggerSpec = {
           },
         },
         responses: {
-          200: { description: "แก้ไขสำเร็จ" },
+          200: {
+            description: "แก้ไขสำเร็จ",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiResponse" },
+              },
+            },
+          },
           400: { description: "VariableCost is required" },
           404: { description: "ไม่พบ item" },
         },
@@ -102,7 +108,14 @@ export const swaggerSpec = {
           },
         ],
         responses: {
-          200: { description: "ลบสำเร็จ" },
+          200: {
+            description: "ลบสำเร็จ",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ApiResponse" },
+              },
+            },
+          },
           404: { description: "ไม่พบ item" },
         },
       },
@@ -130,7 +143,7 @@ export const swaggerSpec = {
             description: "สำเร็จ",
             content: {
               "application/json": {
-                schema: { $ref: "#/components/schemas/WACLogResponse" },
+                schema: { $ref: "#/components/schemas/ApiResponse" },
               },
             },
           },
@@ -186,14 +199,21 @@ export const swaggerSpec = {
       PaginationOutput: {
         type: "object",
         properties: {
-          mode: { type: "string" },
           page: { type: "integer" },
           limit: { type: "integer" },
-          offset: { type: "integer" },
           totalItems: { type: "integer" },
           totalPages: { type: "integer" },
           hasNext: { type: "boolean" },
           hasPrevious: { type: "boolean" },
+        },
+      },
+      ApiResponse: {
+        type: "object",
+        properties: {
+          success: { type: "boolean" },
+          message: { type: "string" },
+          data: { type: "object" },
+          error: { type: "string", nullable: true },
         },
       },
       WACFilter: {

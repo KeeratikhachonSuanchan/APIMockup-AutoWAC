@@ -23,10 +23,8 @@ export function paginate<T>(
   return {
     data: paginatedItems,
     pagination: {
-      mode,
       page: currentPage,
       limit,
-      offset: currentOffset,
       totalItems,
       totalPages,
       hasNext: currentPage < totalPages,

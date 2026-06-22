@@ -41,10 +41,8 @@ export interface PaginationInput {
 }
 
 export interface PaginationOutput {
-  mode: string;
   page: number;
   limit: number;
-  offset: number;
   totalItems: number;
   totalPages: number;
   hasNext: boolean;
@@ -60,4 +58,11 @@ export interface WACLogFilter {
   dateFrom?: string;
   dateTo?: string;
   itemSearchKeyword?: string;
+}
+
+export interface ApiResponse<T = unknown> {
+  success: boolean;
+  message: string;
+  data: T | null;
+  error: string | null;
 }

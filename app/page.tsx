@@ -20,9 +20,9 @@ export default function Home() {
           เพิ่มข้อมูล WAC
         </li>
         <li>
-          <strong>PATCH</strong> /api/wac/:id/variable-cost
+          <strong>PATCH</strong> /api/wac/variable-cost
           <br />
-          แก้ไข VariableCost
+          แก้ไข VariableCost (body: Id, VariableCost)
         </li>
         <li>
           <strong>DELETE</strong> /api/wac/:id

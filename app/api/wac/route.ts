@@ -1,5 +1,6 @@
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { wacBodyItems, generateId } from "@/lib/mockData";
+import { successResponse, errorResponse } from "@/lib/response";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
@@ -15,10 +16,7 @@ export async function POST(request: NextRequest) {
   } = body;
 
   if (!RawCode || !RawName) {
-    return NextResponse.json(
-      { message: "RawCode and RawName are required" },
-      { status: 400 }
-    );
+    return errorResponse("RawCode and RawName are required", 400);
   }
 
   const oldWAC: number = OldWAC ?? 0;
@@ -44,8 +42,5 @@ export async function POST(request: NextRequest) {
 
   wacBodyItems.push(newItem);
 
-  return NextResponse.json(
-    { message: "Item created successfully", data: newItem },
-    { status: 201 }
-  );
+  return successResponse(newItem, "Item created successfully", 201);
 }

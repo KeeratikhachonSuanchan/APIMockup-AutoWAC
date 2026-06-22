@@ -1,6 +1,7 @@
-import { NextResponse, type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { wacBodyItems } from "@/lib/mockData";
 import { paginate } from "@/lib/pagination";
+import { successResponse } from "@/lib/response";
 import type { WACFilter, PaginationInput } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -27,10 +28,7 @@ export async function POST(request: NextRequest) {
   const { data, pagination } = paginate(filtered, paginationInput);
   const variableCost = data.reduce((sum, item) => sum + item.VariableCost, 0);
 
-  return NextResponse.json({
-    filter: {
-      searchKeyword: searchKeyword || null,
-    },
+  return successResponse({
     items: data,
     variableCost: Math.round(variableCost * 100) / 100,
     pagination,
