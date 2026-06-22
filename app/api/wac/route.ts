@@ -4,26 +4,13 @@ import { successResponse, errorResponse } from "@/lib/response";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const {
-    rawCode,
-    rawName,
-    dcCuttingCode,
-    dcName,
-    supplierCode,
-    oldWAC,
-    newWAC,
-    variableCost: vc,
-    supplierName,
-    poNo,
-  } = body;
+  const { rawCode, rawName, dcCuttingCode, dcName, supplierCode, supplierName } = body;
 
   if (!rawCode || !rawName) {
     return errorResponse("rawCode and rawName are required", 400);
   }
 
-  const oldWac: number = oldWAC ?? 0;
-  const newWac: number = newWAC ?? 0;
-  const variableCost: number = vc ?? 0;
+  const oldWAC = Math.round((Math.random() * 400 + 50) * 100) / 100;
 
   const newItem = {
     id: generateId(),
@@ -32,17 +19,17 @@ export async function POST(request: NextRequest) {
     dcCuttingCode: dcCuttingCode ?? "",
     dcName: dcName ?? "",
     supplierCode: supplierCode ?? "",
-    oldWAC: oldWac,
-    newWAC: Math.round((oldWac + variableCost) * 100) / 100,
-    variableCost,
+    oldWAC,
+    newWAC: oldWAC,
+    variableCost: 0,
     tempVariableCost: 0,
-    oldCost: Math.round((oldWac + variableCost) * 100) / 100,
-    newCost: Math.round((oldWac + variableCost) * 100) / 100,
+    oldCost: oldWAC,
+    newCost: oldWAC,
     isEdit: false,
   };
 
   wacBodyItems.push(newItem);
-  addTransactionLog(newItem, supplierName ?? "", poNo ?? "", "success");
+  addTransactionLog(newItem, supplierName ?? "", "", "success");
 
   return successResponse(newItem, "Item created successfully", 201);
 }

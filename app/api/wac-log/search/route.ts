@@ -24,6 +24,10 @@ export async function POST(request: NextRequest) {
     filtered = filtered.filter(
       (item) =>
         item.requestNo.toLowerCase().includes(keyword) ||
+        item.rawCode.toLowerCase().includes(keyword) ||
+        item.rawName.toLowerCase().includes(keyword) ||
+        item.dcCuttingCode.toLowerCase().includes(keyword) ||
+        item.dcName.toLowerCase().includes(keyword) ||
         item.supplierCode.toLowerCase().includes(keyword) ||
         item.supplierName.toLowerCase().includes(keyword) ||
         item.poNo.toLowerCase().includes(keyword) ||

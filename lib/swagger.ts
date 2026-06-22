@@ -318,9 +318,7 @@ export const swaggerSpec = {
           dcCuttingCode: { type: "string", example: "837744" },
           dcName: { type: "string", example: "ARO ปลากะพงขาวแล่แช่แข็ง ไซส์ M กก.ละ" },
           supplierCode: { type: "string", example: "20047" },
-          oldWAC: { type: "number", example: 142.5 },
-          newWAC: { type: "number", example: 145 },
-          variableCost: { type: "number", example: 4.1 },
+          supplierName: { type: "string", example: "Thai Union Frozen" },
         },
       },
       WACBodyLog: {
