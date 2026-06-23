@@ -8,12 +8,11 @@ export async function POST(request: NextRequest) {
   const body: { filter?: WACLogFilter; pagination?: PaginationInput } =
     await request.json();
   const { filter = {}, pagination: paginationInput = {} } = body;
-  const {
-    searchKeyword = "",
-    dateFrom,
-    dateTo,
-    itemSearchKeyword = "",
-  } = filter;
+  const clean = (v?: string) => (!v || v === "null" ? "" : v);
+  const searchKeyword = clean(filter.searchKeyword);
+  const dateFrom = clean(filter.dateFrom);
+  const dateTo = clean(filter.dateTo);
+  const itemSearchKeyword = clean(filter.itemSearchKeyword);
 
   const keyword = searchKeyword.toLowerCase();
   const itemKeyword = itemSearchKeyword.toLowerCase();

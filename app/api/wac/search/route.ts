@@ -8,7 +8,7 @@ export async function POST(request: NextRequest) {
   const body: { filter?: WACFilter; pagination?: PaginationInput } =
     await request.json();
   const { filter = {}, pagination: paginationInput = {} } = body;
-  const { searchKeyword = "" } = filter;
+  const searchKeyword = !filter.searchKeyword || filter.searchKeyword === "null" ? "" : filter.searchKeyword;
 
   const keyword = searchKeyword.toLowerCase();
 

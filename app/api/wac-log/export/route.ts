@@ -1,17 +1,44 @@
 import type { NextRequest } from "next/server";
 import { wacBodyLogItems } from "@/lib/mockData";
 import type { WACLogFilter } from "@/lib/types";
-import ExcelJS from "exceljs";
+
+const CSV_HEADERS = [
+  "Request No.", "Timestamp", "RAW code", "RAW name",
+  "DC Cutting code", "DC name", "Supplier code", "Supplier name",
+  "PO No.", "Old WAC", "New WAC", "Variable cost",
+  "Old cost", "New cost", "Status",
+];
+
+const CSV_KEYS = [
+  "requestNo", "timestamp", "rawCode", "rawName",
+  "dcCuttingCode", "dcName", "supplierCode", "supplierName",
+  "poNo", "oldWAC", "newWAC", "variableCost",
+  "oldCost", "newCost", "status",
+] as const;
+
+function escapeCsv(value: unknown): string {
+  const str = String(value ?? "");
+  if (str.includes(",") || str.includes('"') || str.includes("\n")) {
+    return `"${str.replace(/"/g, '""')}"`;
+  }
+  return str;
+}
 
 export async function POST(request: NextRequest) {
-  const body: { filter?: WACLogFilter } = await request.json();
+  const rawText = await request.text();
+  let body: { filter?: WACLogFilter } = {};
+  try {
+    body = JSON.parse(rawText);
+  } catch {
+    // invalid or empty body — use default filter
+  }
   const { filter = {} } = body;
-  const {
-    searchKeyword = "",
-    dateFrom,
-    dateTo,
-    itemSearchKeyword = "",
-  } = filter;
+
+  const clean = (v?: string) => (!v || v === "null" ? "" : v);
+  const searchKeyword = clean(filter.searchKeyword);
+  const dateFrom = clean(filter.dateFrom);
+  const dateTo = clean(filter.dateTo);
+  const itemSearchKeyword = clean(filter.itemSearchKeyword);
 
   const keyword = searchKeyword.toLowerCase();
   const itemKeyword = itemSearchKeyword.toLowerCase();
@@ -50,38 +77,15 @@ export async function POST(request: NextRequest) {
     filtered = filtered.filter((item) => new Date(item.timestamp) <= to);
   }
 
-  const workbook = new ExcelJS.Workbook();
-  const sheet = workbook.addWorksheet("Transaction Log");
+  const rows = filtered.map((item) =>
+    CSV_KEYS.map((key) => escapeCsv(item[key])).join(",")
+  );
+  const csv = "﻿" + [CSV_HEADERS.join(","), ...rows].join("\n");
 
-  sheet.columns = [
-    { header: "Request No.", key: "requestNo", width: 22 },
-    { header: "Timestamp", key: "timestamp", width: 22 },
-    { header: "RAW code", key: "rawCode", width: 12 },
-    { header: "RAW name", key: "rawName", width: 35 },
-    { header: "DC Cutting code", key: "dcCuttingCode", width: 16 },
-    { header: "DC name", key: "dcName", width: 40 },
-    { header: "Supplier code", key: "supplierCode", width: 14 },
-    { header: "Supplier name", key: "supplierName", width: 28 },
-    { header: "PO No.", key: "poNo", width: 18 },
-    { header: "Old WAC", key: "oldWAC", width: 12 },
-    { header: "New WAC", key: "newWAC", width: 12 },
-    { header: "Variable cost", key: "variableCost", width: 14 },
-    { header: "Old cost", key: "oldCost", width: 12 },
-    { header: "New cost", key: "newCost", width: 12 },
-    { header: "Status", key: "status", width: 12 },
-  ];
-
-  sheet.getRow(1).font = { bold: true };
-
-  filtered.forEach((item) => sheet.addRow(item));
-
-  const buffer = await workbook.xlsx.writeBuffer();
-
-  return new Response(buffer, {
+  return new Response(csv, {
     headers: {
-      "Content-Type":
-        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-      "Content-Disposition": "attachment; filename=transaction-log.xlsx",
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": "attachment; filename=transaction-log.csv",
     },
   });
 }
