@@ -1,4 +1,5 @@
 import type { NextRequest } from "next/server";
+import { formatTimestamp } from "./utils";
 
 export interface ApiLogEntry {
   id: number;
@@ -48,7 +49,7 @@ export function withApiLog(handler: RouteHandler): RouteHandler {
 
     apiLogs.unshift({
       id: nextLogId++,
-      timestamp: new Date().toISOString().slice(0, 19).replace("T", " "),
+      timestamp: formatTimestamp(),
       method: req.method,
       path: url.pathname + url.search,
       status: response.status,

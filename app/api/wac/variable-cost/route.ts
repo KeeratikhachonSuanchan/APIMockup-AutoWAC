@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { wacBodyItems, wacBodyLogItems, addTransactionLog } from "@/lib/mockData";
 import { successResponse, errorResponse } from "@/lib/response";
 import { withApiLog } from "@/lib/apiLog";
+import { formatDateStr } from "@/lib/utils";
 
 export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
   const body = await request.json();
@@ -31,10 +32,9 @@ export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
   const existingLog = wacBodyLogItems.find((l) => l.supplierCode === item.supplierCode && l.supplierName);
   const supplierName = existingLog?.supplierName ?? "";
 
-  const now = new Date();
-  const yymm = now.toISOString().slice(2, 4) + now.toISOString().slice(5, 7);
+  const dateStr = formatDateStr();
   const poSeq = String(Math.floor(Math.random() * 99999) + 1).padStart(5, "0");
-  const poNo = `PO-${yymm}-${poSeq}`;
+  const poNo = `PO-${dateStr.slice(2, 6)}-${poSeq}`;
 
   addTransactionLog(item, supplierName, poNo, "success");
 

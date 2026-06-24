@@ -1,4 +1,5 @@
 import type { WACBodyItem, WACBodyLogItem } from "./types";
+import { formatTimestamp, formatDateStr } from "./utils";
 
 const TOTAL = 90;
 
@@ -10,15 +11,13 @@ export function generateId(): number {
 }
 
 function generateRequestNo(): string {
-  const now = new Date();
-  const date = now.toISOString().slice(0, 10).replace(/-/g, "");
+  const date = formatDateStr();
   const seq = String(nextRequestNo++).padStart(6, "0");
   return `WAC_${date}${seq}`;
 }
 
 function currentTimestamp(): string {
-  const now = new Date();
-  return now.toISOString().slice(0, 19).replace("T", " ");
+  return formatTimestamp();
 }
 
 export function addTransactionLog(
@@ -116,7 +115,7 @@ function buildInitialData() {
     const newCost = newWAC;
 
     const ts = new Date(baseDate.getTime() - i * 45 * 60 * 1000);
-    const tsStr = ts.toISOString().slice(0, 19).replace("T", " ");
+    const tsStr = formatTimestamp(ts);
 
     wacItems.push({
       id: i + 1,
@@ -134,7 +133,7 @@ function buildInitialData() {
       newCost,
       isEdit: false,
     });
-    const dateStr = ts.toISOString().slice(0, 10).replace(/-/g, "");
+    const dateStr = formatDateStr(ts);
     const seq = String(i + 1).padStart(6, "0");
 
     logItems.push({

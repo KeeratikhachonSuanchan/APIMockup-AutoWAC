@@ -2,6 +2,7 @@ import type { NextRequest } from "next/server";
 import { wacBodyItems, wacBodyLogItems, generateId, addTransactionLog } from "@/lib/mockData";
 import { successResponse, errorResponse } from "@/lib/response";
 import { withApiLog } from "@/lib/apiLog";
+import { formatTimestamp, formatDateStr } from "@/lib/utils";
 
 export const POST = withApiLog(async function POST(request: NextRequest) {
   const body = await request.json();
@@ -27,8 +28,7 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
 
   const oldWAC = Math.round((Math.random() * 400 + 50) * 100) / 100;
 
-  const now = new Date();
-  const timestamp = now.toISOString().slice(0, 19).replace("T", " ");
+  const timestamp = formatTimestamp();
 
   const newItem = {
     id: generateId(),
@@ -49,9 +49,9 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
 
   wacBodyItems.push(newItem);
 
-  const yymm = now.toISOString().slice(2, 4) + now.toISOString().slice(5, 7);
+  const dateStr = formatDateStr();
   const poSeq = String(Math.floor(Math.random() * 99999) + 1).padStart(5, "0");
-  const poNo = `PO-${yymm}-${poSeq}`;
+  const poNo = `PO-${dateStr.slice(2, 6)}-${poSeq}`;
 
   let resolvedName = supplierName ?? "";
   if (!resolvedName && supplierCode) {
