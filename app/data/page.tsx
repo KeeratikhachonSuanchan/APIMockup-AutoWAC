@@ -13,6 +13,9 @@ export default function DataPage() {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const [resetMsg, setResetMsg] = useState("");
+  const [statusReqNo, setStatusReqNo] = useState("");
+  const [statusVal, setStatusVal] = useState("success");
+  const [statusMsg, setStatusMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const limit = 20;
 
   const fetchData = useCallback(async () => {
@@ -39,11 +42,31 @@ export default function DataPage() {
     setPage(1);
     setSearch("");
     setQuery("");
+    setStatusMsg(null);
   }
 
   function handleSearch() {
     setQuery(search);
     setPage(1);
+  }
+
+  async function handleStatusUpdate() {
+    if (!statusReqNo.trim()) {
+      setStatusMsg({ text: "Please enter Request No.", ok: false });
+      return;
+    }
+    setStatusMsg({ text: "Updating...", ok: true });
+    const res = await fetch("/api/wac-log/status", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requestNo: statusReqNo.trim(), status: statusVal }),
+    });
+    const json = await res.json();
+    setStatusMsg({ text: json.success ? `Updated to "${statusVal}"` : json.error, ok: json.success });
+    if (json.success) {
+      fetchData();
+      setTimeout(() => setStatusMsg(null), 3000);
+    }
   }
 
   const totalPages = Math.ceil(total / limit);
@@ -52,9 +75,7 @@ export default function DataPage() {
   return (
     <main style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", padding: "1.5rem", color: "#333" }}>
       <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem" }}>
-        <a href="/" style={{ color: "#6c63ff", textDecoration: "none", fontSize: "0.85rem" }}>
-          Home
-        </a>
+        <a href="/" style={{ color: "#6c63ff", textDecoration: "none", fontSize: "0.85rem" }}>Home</a>
         <h1 style={{ fontSize: "1.4rem", fontWeight: 700, margin: 0 }}>Data Viewer</h1>
         <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem", alignItems: "center" }}>
           {resetMsg && <span style={{ color: "#28a745", fontSize: "0.8rem" }}>{resetMsg}</span>}
@@ -111,40 +132,88 @@ export default function DataPage() {
       </div>
 
       <div style={{
-        display: "flex", gap: "0.5rem", padding: "0.75rem 1rem",
+        display: "flex", flexDirection: "column", gap: "0.75rem", padding: "0.75rem 1rem",
         backgroundColor: "white", border: "1px solid #ddd", borderTop: "none",
         borderRadius: "0 0 6px 6px", marginBottom: "1rem",
       }}>
-        <input
-          type="text"
-          placeholder="Search..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-          style={{
-            flex: 1, padding: "0.5rem 0.75rem", fontSize: "0.85rem",
-            border: "1px solid #ccc", borderRadius: "6px", outline: "none",
-          }}
-        />
-        <button
-          onClick={handleSearch}
-          style={{
-            padding: "0.5rem 1rem", fontSize: "0.85rem", backgroundColor: "#6c63ff",
-            color: "white", border: "none", borderRadius: "6px", cursor: "pointer",
-          }}
-        >
-          Search
-        </button>
-        {query && (
-          <button
-            onClick={() => { setSearch(""); setQuery(""); setPage(1); }}
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             style={{
-              padding: "0.5rem 0.75rem", fontSize: "0.85rem", backgroundColor: "#999",
+              flex: 1, padding: "0.5rem 0.75rem", fontSize: "0.85rem",
+              border: "1px solid #ccc", borderRadius: "6px", outline: "none",
+            }}
+          />
+          <button
+            onClick={handleSearch}
+            style={{
+              padding: "0.5rem 1rem", fontSize: "0.85rem", backgroundColor: "#6c63ff",
               color: "white", border: "none", borderRadius: "6px", cursor: "pointer",
             }}
           >
-            Clear
+            Search
           </button>
+          {query && (
+            <button
+              onClick={() => { setSearch(""); setQuery(""); setPage(1); }}
+              style={{
+                padding: "0.5rem 0.75rem", fontSize: "0.85rem", backgroundColor: "#999",
+                color: "white", border: "none", borderRadius: "6px", cursor: "pointer",
+              }}
+            >
+              Clear
+            </button>
+          )}
+        </div>
+
+        {tab === "log" && (
+          <div style={{
+            display: "flex", gap: "0.5rem", alignItems: "center",
+            padding: "0.5rem 0.75rem", backgroundColor: "#f8f9fa",
+            borderRadius: "6px", border: "1px solid #e9ecef",
+          }}>
+            <span style={{ fontSize: "0.8rem", color: "#666", fontWeight: 500 }}>Update Status:</span>
+            <input
+              type="text"
+              placeholder="Request No."
+              value={statusReqNo}
+              onChange={(e) => setStatusReqNo(e.target.value)}
+              style={{
+                flex: 1, padding: "0.35rem 0.6rem", fontSize: "0.8rem",
+                border: "1px solid #ccc", borderRadius: "4px", outline: "none",
+              }}
+            />
+            <select
+              value={statusVal}
+              onChange={(e) => setStatusVal(e.target.value)}
+              style={{
+                padding: "0.35rem 0.6rem", fontSize: "0.8rem",
+                border: "1px solid #ccc", borderRadius: "4px", backgroundColor: "white",
+              }}
+            >
+              <option value="success">success</option>
+              <option value="pending">pending</option>
+              <option value="failed">failed</option>
+            </select>
+            <button
+              onClick={handleStatusUpdate}
+              style={{
+                padding: "0.35rem 0.75rem", fontSize: "0.8rem", backgroundColor: "#007bff",
+                color: "white", border: "none", borderRadius: "4px", cursor: "pointer",
+              }}
+            >
+              Update
+            </button>
+            {statusMsg && (
+              <span style={{ fontSize: "0.8rem", color: statusMsg.ok ? "#28a745" : "#dc3545" }}>
+                {statusMsg.text}
+              </span>
+            )}
+          </div>
         )}
       </div>
 

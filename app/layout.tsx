@@ -1,5 +1,8 @@
 export const metadata = {
   title: "WAC Mockup API",
+  icons: {
+    icon: "/resources/images/api-management.png",
+  },
 };
 
 export default function RootLayout({

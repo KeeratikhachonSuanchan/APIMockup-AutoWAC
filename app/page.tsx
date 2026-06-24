@@ -5,25 +5,6 @@ import { useState, useEffect } from "react";
 export default function Home() {
   const [baseUrl, setBaseUrl] = useState("");
   const [copied, setCopied] = useState(false);
-  const [requestNo, setRequestNo] = useState("");
-  const [status, setStatus] = useState("success");
-  const [statusMsg, setStatusMsg] = useState<{ text: string; ok: boolean } | null>(null);
-
-  async function handleStatusUpdate() {
-    if (!requestNo.trim()) {
-      setStatusMsg({ text: "Please enter Request No.", ok: false });
-      return;
-    }
-    setStatusMsg({ text: "Updating...", ok: true });
-    const res = await fetch("/api/wac-log/status", {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ requestNo: requestNo.trim(), status }),
-    });
-    const data = await res.json();
-    setStatusMsg({ text: data.success ? `Updated to "${status}"` : data.error, ok: data.success });
-    if (data.success) setTimeout(() => setStatusMsg(null), 3000);
-  }
 
   useEffect(() => {
     setBaseUrl(window.location.origin);
@@ -101,53 +82,6 @@ export default function Home() {
         >
           Data Viewer
         </a>
-      </div>
-
-      <div style={{
-        backgroundColor: "#f8f9fa", border: "1px solid #e0e0e0", borderRadius: "8px",
-        padding: "1.25rem", marginBottom: "2rem",
-      }}>
-        <h2 style={{ fontSize: "1rem", fontWeight: 600, margin: "0 0 0.75rem", color: "#444" }}>
-          Update Log Status
-        </h2>
-        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
-          <input
-            type="text"
-            placeholder="Request No."
-            value={requestNo}
-            onChange={(e) => setRequestNo(e.target.value)}
-            style={{
-              flex: 1, minWidth: "240px", padding: "0.5rem 0.75rem",
-              border: "1px solid #ccc", borderRadius: "6px", fontSize: "0.9rem", outline: "none",
-            }}
-          />
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            style={{
-              padding: "0.5rem 0.75rem", border: "1px solid #ccc",
-              borderRadius: "6px", fontSize: "0.9rem", backgroundColor: "white",
-            }}
-          >
-            <option value="success">success</option>
-            <option value="pending">pending</option>
-            <option value="failed">failed</option>
-          </select>
-          <button
-            onClick={handleStatusUpdate}
-            style={{
-              padding: "0.5rem 1rem", backgroundColor: "#007bff", color: "white",
-              border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "0.9rem", fontWeight: 500,
-            }}
-          >
-            Update
-          </button>
-        </div>
-        {statusMsg && (
-          <p style={{ color: statusMsg.ok ? "#28a745" : "#dc3545", margin: "0.5rem 0 0", fontSize: "0.85rem" }}>
-            {statusMsg.text}
-          </p>
-        )}
       </div>
 
       <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "0.75rem", color: "#444" }}>
