@@ -10,6 +10,20 @@ export async function POST(request: NextRequest) {
     return errorResponse("rawCode and rawName are required", 400);
   }
 
+  const duplicate = wacBodyItems.find(
+    (i) =>
+      i.rawCode === rawCode &&
+      i.dcCuttingCode === (dcCuttingCode ?? "") &&
+      i.supplierCode === (supplierCode ?? "")
+  );
+
+  if (duplicate) {
+    return errorResponse(
+      "มีการผูก Raw material + DC Cutting + Supplier code นี้อยู่แล้ว ไม่สามารถเพิ่มซ้ำได้",
+      409
+    );
+  }
+
   const oldWAC = Math.round((Math.random() * 400 + 50) * 100) / 100;
 
   const now = new Date();
