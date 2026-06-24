@@ -5,18 +5,9 @@ import { useState, useEffect } from "react";
 export default function Home() {
   const [baseUrl, setBaseUrl] = useState("");
   const [copied, setCopied] = useState(false);
-  const [resetMsg, setResetMsg] = useState("");
   const [requestNo, setRequestNo] = useState("");
   const [status, setStatus] = useState("success");
   const [statusMsg, setStatusMsg] = useState<{ text: string; ok: boolean } | null>(null);
-
-  async function handleReset() {
-    setResetMsg("Resetting...");
-    const res = await fetch("/api/reset", { method: "POST" });
-    const data = await res.json();
-    setResetMsg(data.message);
-    setTimeout(() => setResetMsg(""), 3000);
-  }
 
   async function handleStatusUpdate() {
     if (!requestNo.trim()) {
@@ -93,7 +84,7 @@ export default function Home() {
         <a
           href="/swagger"
           style={{
-            display: "inline-flex", alignItems: "center", gap: "0.4rem",
+            display: "inline-flex", alignItems: "center",
             padding: "0.6rem 1.2rem", backgroundColor: "#6c63ff", color: "white",
             borderRadius: "6px", textDecoration: "none", fontSize: "0.9rem", fontWeight: 500,
           }}
@@ -110,16 +101,6 @@ export default function Home() {
         >
           Data Viewer
         </a>
-        <button
-          onClick={handleReset}
-          style={{
-            padding: "0.6rem 1.2rem", backgroundColor: "#dc3545", color: "white",
-            border: "none", borderRadius: "6px", cursor: "pointer", fontSize: "0.9rem", fontWeight: 500,
-          }}
-        >
-          Reset Data
-        </button>
-        {resetMsg && <span style={{ color: "#28a745", alignSelf: "center", fontSize: "0.85rem" }}>{resetMsg}</span>}
       </div>
 
       <div style={{

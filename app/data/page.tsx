@@ -12,6 +12,7 @@ export default function DataPage() {
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [resetMsg, setResetMsg] = useState("");
   const limit = 20;
 
   const fetchData = useCallback(async () => {
@@ -55,16 +56,37 @@ export default function DataPage() {
           Home
         </a>
         <h1 style={{ fontSize: "1.4rem", fontWeight: 700, margin: 0 }}>Data Viewer</h1>
-        <button
-          onClick={fetchData}
-          style={{
-            marginLeft: "auto", padding: "0.4rem 0.8rem", fontSize: "0.8rem",
-            backgroundColor: "#6c63ff", color: "white", border: "none",
-            borderRadius: "4px", cursor: "pointer",
-          }}
-        >
-          Refresh
-        </button>
+        <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem", alignItems: "center" }}>
+          {resetMsg && <span style={{ color: "#28a745", fontSize: "0.8rem" }}>{resetMsg}</span>}
+          <button
+            onClick={fetchData}
+            style={{
+              padding: "0.4rem 0.8rem", fontSize: "0.8rem",
+              backgroundColor: "#6c63ff", color: "white", border: "none",
+              borderRadius: "4px", cursor: "pointer",
+            }}
+          >
+            Refresh
+          </button>
+          <button
+            onClick={async () => {
+              if (!confirm("Are you sure you want to reset?\nAll data will be restored to the initial mockup state.")) return;
+              setResetMsg("Resetting...");
+              const res = await fetch("/api/reset", { method: "POST" });
+              const json = await res.json();
+              setResetMsg(json.message);
+              fetchData();
+              setTimeout(() => setResetMsg(""), 3000);
+            }}
+            style={{
+              padding: "0.4rem 0.8rem", fontSize: "0.8rem",
+              backgroundColor: "#dc3545", color: "white", border: "none",
+              borderRadius: "4px", cursor: "pointer",
+            }}
+          >
+            Reset Data
+          </button>
+        </div>
       </div>
 
       <div style={{ display: "flex", gap: "0", marginBottom: "0" }}>
