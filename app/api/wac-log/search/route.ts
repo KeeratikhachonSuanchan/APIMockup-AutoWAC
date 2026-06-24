@@ -3,8 +3,9 @@ import { wacBodyLogItems } from "@/lib/mockData";
 import { paginate } from "@/lib/pagination";
 import { successResponse } from "@/lib/response";
 import type { WACLogFilter, PaginationInput } from "@/lib/types";
+import { withApiLog } from "@/lib/apiLog";
 
-export async function POST(request: NextRequest) {
+export const POST = withApiLog(async function POST(request: NextRequest) {
   const body: { filter?: WACLogFilter; pagination?: PaginationInput } =
     await request.json();
   const { filter = {}, pagination: paginationInput = {} } = body;
@@ -65,4 +66,4 @@ export async function POST(request: NextRequest) {
   }));
 
   return successResponse({ items, pagination });
-}
+});

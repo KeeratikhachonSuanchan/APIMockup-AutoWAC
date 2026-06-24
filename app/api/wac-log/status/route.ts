@@ -1,8 +1,9 @@
 import type { NextRequest } from "next/server";
 import { wacBodyLogItems } from "@/lib/mockData";
 import { successResponse, errorResponse } from "@/lib/response";
+import { withApiLog } from "@/lib/apiLog";
 
-export async function PATCH(request: NextRequest) {
+export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
   const body = await request.json();
   const { requestNo, status } = body;
 
@@ -24,4 +25,4 @@ export async function PATCH(request: NextRequest) {
   log.status = status;
 
   return successResponse(log, "Status updated successfully");
-}
+});

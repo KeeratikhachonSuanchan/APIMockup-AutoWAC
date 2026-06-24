@@ -1,8 +1,9 @@
 import type { NextRequest } from "next/server";
-import { wacBodyItems, generateId, addTransactionLog } from "@/lib/mockData";
+import { wacBodyItems, wacBodyLogItems, generateId, addTransactionLog } from "@/lib/mockData";
 import { successResponse, errorResponse } from "@/lib/response";
+import { withApiLog } from "@/lib/apiLog";
 
-export async function POST(request: NextRequest) {
+export const POST = withApiLog(async function POST(request: NextRequest) {
   const body = await request.json();
   const { rawCode, rawName, dcCuttingCode, dcName, supplierCode, supplierName } = body;
 
@@ -52,12 +53,18 @@ export async function POST(request: NextRequest) {
   const poSeq = String(Math.floor(Math.random() * 99999) + 1).padStart(5, "0");
   const poNo = `PO-${yymm}-${poSeq}`;
 
-  addTransactionLog(newItem, supplierName ?? "", poNo, "pending");
+  let resolvedName = supplierName ?? "";
+  if (!resolvedName && supplierCode) {
+    const existing = wacBodyLogItems.find((l) => l.supplierCode === supplierCode && l.supplierName);
+    resolvedName = existing?.supplierName ?? "";
+  }
+
+  addTransactionLog(newItem, resolvedName, poNo, "pending");
 
   return successResponse(newItem, "Item created successfully", 201);
-}
+});
 
-export async function DELETE(request: NextRequest) {
+export const DELETE = withApiLog(async function DELETE(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const idParam = searchParams.get("wacId");
 
@@ -75,4 +82,4 @@ export async function DELETE(request: NextRequest) {
   const [deleted] = wacBodyItems.splice(index, 1);
 
   return successResponse(deleted, "Item deleted successfully");
-}
+});

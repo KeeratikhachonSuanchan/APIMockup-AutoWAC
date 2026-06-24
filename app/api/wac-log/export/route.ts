@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { wacBodyLogItems } from "@/lib/mockData";
 import type { WACLogFilter } from "@/lib/types";
+import { withApiLog } from "@/lib/apiLog";
 
 const CSV_HEADERS = [
   "Request No.", "Timestamp", "RAW code", "RAW name",
@@ -24,7 +25,7 @@ function escapeCsv(value: unknown): string {
   return str;
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withApiLog(async function POST(request: NextRequest) {
   const rawText = await request.text();
   let body: { filter?: WACLogFilter } = {};
   try {
@@ -88,4 +89,4 @@ export async function POST(request: NextRequest) {
       "Content-Disposition": "attachment; filename=transaction-log.csv",
     },
   });
-}
+});

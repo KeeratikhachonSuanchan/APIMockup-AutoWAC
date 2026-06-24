@@ -82,6 +82,16 @@ export default function Home() {
         >
           Data Viewer
         </a>
+        <a
+          href="/logs"
+          style={{
+            display: "inline-flex", alignItems: "center",
+            padding: "0.6rem 1.2rem", backgroundColor: "#fd7e14", color: "white",
+            borderRadius: "6px", textDecoration: "none", fontSize: "0.9rem", fontWeight: 500,
+          }}
+        >
+          API Logs
+        </a>
       </div>
 
       <h2 style={{ fontSize: "1.1rem", fontWeight: 600, marginBottom: "0.75rem", color: "#444" }}>
