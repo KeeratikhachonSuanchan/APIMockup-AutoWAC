@@ -47,7 +47,12 @@ export async function POST(request: NextRequest) {
   };
 
   wacBodyItems.push(newItem);
-  addTransactionLog(newItem, supplierName ?? "", "", "success");
+
+  const yymm = now.toISOString().slice(2, 4) + now.toISOString().slice(5, 7);
+  const poSeq = String(Math.floor(Math.random() * 99999) + 1).padStart(5, "0");
+  const poNo = `PO-${yymm}-${poSeq}`;
+
+  addTransactionLog(newItem, supplierName ?? "", poNo, "pending");
 
   return successResponse(newItem, "Item created successfully", 201);
 }
