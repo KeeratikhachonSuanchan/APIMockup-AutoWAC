@@ -100,6 +100,16 @@ export default function Home() {
         >
           Swagger UI
         </a>
+        <a
+          href="/data"
+          style={{
+            display: "inline-flex", alignItems: "center",
+            padding: "0.6rem 1.2rem", backgroundColor: "#17a2b8", color: "white",
+            borderRadius: "6px", textDecoration: "none", fontSize: "0.9rem", fontWeight: 500,
+          }}
+        >
+          Data Viewer
+        </a>
         <button
           onClick={handleReset}
           style={{
