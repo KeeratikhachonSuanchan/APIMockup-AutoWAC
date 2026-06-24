@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 interface LogEntry {
   id: number;
@@ -19,6 +19,9 @@ export default function LogsPage() {
   const [selected, setSelected] = useState<LogEntry | null>(null);
   const [detailTab, setDetailTab] = useState<"headers" | "request" | "response">("request");
   const [autoRefresh, setAutoRefresh] = useState(true);
+  const [search, setSearch] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
 
   const fetchLogs = useCallback(async () => {
     const res = await fetch("/api/api-logs");
@@ -39,6 +42,27 @@ export default function LogsPage() {
     setSelected(null);
   }
 
+  const filtered = useMemo(() => {
+    let result = logs;
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (l) =>
+          l.method.toLowerCase().includes(q) ||
+          l.path.toLowerCase().includes(q) ||
+          String(l.status).includes(q) ||
+          l.timestamp.includes(q)
+      );
+    }
+    if (dateFrom) {
+      result = result.filter((l) => l.timestamp.slice(0, 10) >= dateFrom);
+    }
+    if (dateTo) {
+      result = result.filter((l) => l.timestamp.slice(0, 10) <= dateTo);
+    }
+    return result;
+  }, [logs, search, dateFrom, dateTo]);
+
   const methodColor: Record<string, string> = {
     POST: "#49cc90",
     PATCH: "#fca130",
@@ -58,34 +82,58 @@ export default function LogsPage() {
     }
   }
 
+  const inputStyle = {
+    padding: "0.35rem 0.6rem",
+    fontSize: "0.8rem",
+    border: "1px solid #ccc",
+    borderRadius: "4px",
+    outline: "none",
+  };
+
   return (
     <main style={{ fontFamily: "'Segoe UI', system-ui, sans-serif", padding: "1.5rem", color: "#333", display: "flex", flexDirection: "column", height: "100vh", boxSizing: "border-box" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "1rem", flexShrink: 0 }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "0.75rem", flexShrink: 0 }}>
         <a href="/" style={{ color: "#6c63ff", textDecoration: "none", fontSize: "0.85rem" }}>Home</a>
         <h1 style={{ fontSize: "1.4rem", fontWeight: 700, margin: 0 }}>API Logs</h1>
-        <span style={{ fontSize: "0.8rem", color: "#888" }}>{logs.length} entries</span>
+        <span style={{ fontSize: "0.8rem", color: "#888" }}>{filtered.length}/{logs.length} entries</span>
         <div style={{ marginLeft: "auto", display: "flex", gap: "0.5rem", alignItems: "center" }}>
           <label style={{ fontSize: "0.8rem", color: "#666", display: "flex", alignItems: "center", gap: "0.3rem" }}>
-            <input
-              type="checkbox"
-              checked={autoRefresh}
-              onChange={(e) => setAutoRefresh(e.target.checked)}
-            />
+            <input type="checkbox" checked={autoRefresh} onChange={(e) => setAutoRefresh(e.target.checked)} />
             Auto-refresh
           </label>
-          <button
-            onClick={fetchLogs}
-            style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", backgroundColor: "#6c63ff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
-          >
+          <button onClick={fetchLogs} style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", backgroundColor: "#6c63ff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
             Refresh
           </button>
-          <button
-            onClick={clearLogs}
-            style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", backgroundColor: "#dc3545", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
-          >
+          <button onClick={clearLogs} style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", backgroundColor: "#dc3545", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
             Clear
           </button>
         </div>
+      </div>
+
+      <div style={{
+        display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap",
+        padding: "0.5rem 0.75rem", backgroundColor: "#f8f9fa", border: "1px solid #ddd",
+        borderRadius: "6px", marginBottom: "0.75rem", flexShrink: 0,
+      }}>
+        <input
+          type="text"
+          placeholder="Search method, path, status..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          style={{ ...inputStyle, flex: 1, minWidth: "180px" }}
+        />
+        <span style={{ fontSize: "0.8rem", color: "#666" }}>From</span>
+        <input type="date" value={dateFrom} onChange={(e) => setDateFrom(e.target.value)} style={inputStyle} />
+        <span style={{ fontSize: "0.8rem", color: "#666" }}>To</span>
+        <input type="date" value={dateTo} onChange={(e) => setDateTo(e.target.value)} style={inputStyle} />
+        {(search || dateFrom || dateTo) && (
+          <button
+            onClick={() => { setSearch(""); setDateFrom(""); setDateTo(""); }}
+            style={{ padding: "0.35rem 0.6rem", fontSize: "0.8rem", backgroundColor: "#999", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}
+          >
+            Clear
+          </button>
+        )}
       </div>
 
       <div style={{ display: "flex", gap: "1rem", flex: 1, minHeight: 0 }}>
@@ -93,6 +141,7 @@ export default function LogsPage() {
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem" }}>
             <thead>
               <tr style={{ backgroundColor: "#f0f0f0", position: "sticky", top: 0 }}>
+                <th style={{ padding: "0.5rem", textAlign: "left", fontWeight: 600, color: "#555" }}>Date</th>
                 <th style={{ padding: "0.5rem", textAlign: "left", fontWeight: 600, color: "#555" }}>Time</th>
                 <th style={{ padding: "0.5rem", textAlign: "left", fontWeight: 600, color: "#555" }}>Method</th>
                 <th style={{ padding: "0.5rem", textAlign: "left", fontWeight: 600, color: "#555" }}>Path</th>
@@ -101,14 +150,14 @@ export default function LogsPage() {
               </tr>
             </thead>
             <tbody>
-              {logs.length === 0 ? (
+              {filtered.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ padding: "2rem", textAlign: "center", color: "#999" }}>
-                    No API calls logged yet
+                  <td colSpan={6} style={{ padding: "2rem", textAlign: "center", color: "#999" }}>
+                    {logs.length === 0 ? "No API calls logged yet" : "No results matching filter"}
                   </td>
                 </tr>
               ) : (
-                logs.map((log) => (
+                filtered.map((log) => (
                   <tr
                     key={log.id}
                     onClick={() => { setSelected(log); setDetailTab("request"); }}
@@ -121,6 +170,9 @@ export default function LogsPage() {
                     onMouseLeave={(e) => { if (selected?.id !== log.id) e.currentTarget.style.backgroundColor = "white"; }}
                   >
                     <td style={{ padding: "0.4rem 0.5rem", whiteSpace: "nowrap", color: "#888", fontFamily: "monospace" }}>
+                      {log.timestamp.slice(0, 10)}
+                    </td>
+                    <td style={{ padding: "0.4rem 0.5rem", whiteSpace: "nowrap", color: "#555", fontFamily: "monospace" }}>
                       {log.timestamp.slice(11)}
                     </td>
                     <td style={{ padding: "0.4rem 0.5rem" }}>
