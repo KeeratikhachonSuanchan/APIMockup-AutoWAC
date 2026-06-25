@@ -23,8 +23,10 @@ export const wacBodyLogItems = pgTable("wac_body_log_items", {
   supplierCode: varchar("supplier_code", { length: 20 }).default("").notNull(),
   supplierName: text("supplier_name").default("").notNull(),
   poNo: varchar("po_no", { length: 30 }).notNull(),
-  rawWAC: numeric("raw_wac", { precision: 12, scale: 2 }).notNull(),
-  newUnitCost: numeric("new_unit_cost", { precision: 12, scale: 2 }).notNull(),
+  oldWac: numeric("old_wac", { precision: 12, scale: 2 }).notNull(),
+  newWac: numeric("new_wac", { precision: 12, scale: 2 }).notNull(),
   variableCost: numeric("variable_cost", { precision: 12, scale: 2 }).default("0").notNull(),
+  oldCost: numeric("old_cost", { precision: 12, scale: 2 }).notNull(),
+  newCost: numeric("new_cost", { precision: 12, scale: 2 }).notNull(),
   status: varchar("status", { length: 10 }).default("pending").notNull(),
 });

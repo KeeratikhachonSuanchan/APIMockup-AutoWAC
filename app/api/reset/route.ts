@@ -83,9 +83,11 @@ export const POST = withApiLog(async function POST() {
     const p = products[i % products.length];
     const s = suppliers[i % suppliers.length];
     const priceShift = Math.floor(i / products.length) * 2.5;
-    const rawWAC = r2(p.baseWAC + priceShift);
+    const oldWac = r2(p.baseWAC + priceShift);
+    const newWac = r2(oldWac + (i % 5 === 3 ? -2.5 : 2.5));
     const vc = r2(p.vc);
-    const newUnitCost = r2(rawWAC + vc);
+    const oldCost = r2(oldWac + vc);
+    const newCost = r2(newWac + vc);
 
     const ts = new Date(baseDate.getTime() - i * 45 * 60 * 1000);
     const dateStr = formatTs(ts);
@@ -98,8 +100,8 @@ export const POST = withApiLog(async function POST() {
       dcCuttingCode: p.dcCuttingCode,
       dcName: p.dcName,
       supplierCode: s.code,
-      rawWAC: String(rawWAC),
-      newUnitCost: String(newUnitCost),
+      rawWAC: String(newWac),
+      newUnitCost: String(newCost),
       variableCost: String(vc),
     });
 
@@ -113,9 +115,11 @@ export const POST = withApiLog(async function POST() {
       supplierCode: s.code,
       supplierName: s.name,
       poNo: `PO-2605-${String(500 - i).padStart(5, "0")}`,
-      rawWAC: String(rawWAC),
-      newUnitCost: String(newUnitCost),
+      oldWac: String(oldWac),
+      newWac: String(newWac),
       variableCost: String(vc),
+      oldCost: String(oldCost),
+      newCost: String(newCost),
       status: statuses[i % statuses.length],
     });
   }

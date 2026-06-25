@@ -2,7 +2,7 @@ import type { PaginationInput, PaginationOutput } from "./types";
 
 export function paginate<T>(
   items: T[],
-  { mode = "page", page = 1, limit = 20, offset = 0 }: PaginationInput = {}
+  { mode = "page", page = 1, limit = 30, offset = 0 }: PaginationInput = {}
 ): { data: T[]; pagination: PaginationOutput } {
   const totalItems = items.length;
   const totalPages = Math.ceil(totalItems / limit);

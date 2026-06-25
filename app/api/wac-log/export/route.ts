@@ -9,7 +9,7 @@ import { formatTimestamp } from "@/lib/utils";
 const CSV_HEADERS = [
   "Request No.", "Timestamp", "RAW code", "RAW name",
   "DC Cutting code", "DC name", "Supplier code", "Supplier name",
-  "PO No.", "Raw WAC", "New Unit Cost", "Variable cost",
+  "PO No.", "Old WAC", "New WAC", "Variable cost", "Old cost", "New cost",
   "Status",
 ];
 
@@ -77,11 +77,14 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
 
   const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
+  const MAX_EXPORT = 5000;
+
   const rows = await db
     .select()
     .from(wacBodyLogItems)
     .where(whereClause)
-    .orderBy(desc(wacBodyLogItems.timestamp));
+    .orderBy(desc(wacBodyLogItems.timestamp))
+    .limit(MAX_EXPORT);
 
   const csvRows = rows.map((item) => {
     const values = [
@@ -94,9 +97,11 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
       item.supplierCode,
       item.supplierName,
       item.poNo,
-      Number(item.rawWAC),
-      Number(item.newUnitCost),
+      Number(item.oldWac),
+      Number(item.newWac),
       Number(item.variableCost),
+      Number(item.oldCost),
+      Number(item.newCost),
       item.status,
     ];
     return values.map((v) => escapeCsv(v)).join(",");

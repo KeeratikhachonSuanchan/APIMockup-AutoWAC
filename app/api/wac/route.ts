@@ -69,6 +69,12 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
   const seq = String(Number(countResult[0].count) + 1).padStart(6, "0");
   const requestNo = `WAC_${formatDateStr()}${seq}`;
 
+  const oldWac = rawWAC;
+  const newWac = rawWAC;
+  const vc = 0;
+  const oldCost = Math.round((oldWac + vc) * 100) / 100;
+  const newCost = Math.round((newWac + vc) * 100) / 100;
+
   await db.insert(wacBodyLogItems).values({
     requestNo,
     timestamp: now,
@@ -79,9 +85,11 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
     supplierCode: newItem.supplierCode,
     supplierName: resolvedName,
     poNo,
-    rawWAC: newItem.rawWAC,
-    newUnitCost: newItem.newUnitCost,
-    variableCost: newItem.variableCost,
+    oldWac: String(oldWac),
+    newWac: String(newWac),
+    variableCost: String(vc),
+    oldCost: String(oldCost),
+    newCost: String(newCost),
     status: "pending",
   });
 

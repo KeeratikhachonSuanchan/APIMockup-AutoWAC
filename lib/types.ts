@@ -22,9 +22,11 @@ export interface WACBodyLogItem {
   supplierCode: string;
   supplierName: string;
   poNo: string;
-  rawWAC: number;
-  newUnitCost: number;
+  oldWac: number;
+  newWac: number;
   variableCost: number;
+  oldCost: number;
+  newCost: number;
   status: "success" | "pending" | "failed";
 }
 

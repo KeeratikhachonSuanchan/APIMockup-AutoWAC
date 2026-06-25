@@ -30,11 +30,21 @@ export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
   }
 
   const result = {
-    ...updated,
+    requestNo: updated.requestNo,
     timestamp: formatTimestamp(new Date(updated.timestamp)),
-    rawWAC: Number(updated.rawWAC),
-    newUnitCost: Number(updated.newUnitCost),
+    rawCode: updated.rawCode,
+    rawName: updated.rawName,
+    dcCuttingCode: updated.dcCuttingCode,
+    dcName: updated.dcName,
+    supplierCode: updated.supplierCode,
+    supplierName: updated.supplierName,
+    poNo: updated.poNo,
+    oldWac: Number(updated.oldWac),
+    newWac: Number(updated.newWac),
     variableCost: Number(updated.variableCost),
+    oldCost: Number(updated.oldCost),
+    newCost: Number(updated.newCost),
+    status: updated.status,
   };
 
   return successResponse(result, "Status updated successfully");
