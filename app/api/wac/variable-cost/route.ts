@@ -35,5 +35,6 @@ export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
 
   addTransactionLog(item, supplierName, poNo, "success");
 
-  return successResponse(item, "VariableCost updated successfully");
+  const { tempVariableCost: _, ...result } = item;
+  return successResponse(result, "VariableCost updated successfully");
 });

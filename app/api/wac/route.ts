@@ -58,7 +58,8 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
 
   addTransactionLog(newItem, resolvedName, poNo, "pending");
 
-  return successResponse(newItem, "Item created successfully", 201);
+  const { tempVariableCost: _, ...result } = newItem;
+  return successResponse(result, "Item created successfully", 201);
 });
 
 export const DELETE = withApiLog(async function DELETE(request: NextRequest) {
@@ -77,6 +78,7 @@ export const DELETE = withApiLog(async function DELETE(request: NextRequest) {
   }
 
   const [deleted] = wacBodyItems.splice(index, 1);
+  const { tempVariableCost: _, ...result } = deleted;
 
-  return successResponse(deleted, "Item deleted successfully");
+  return successResponse(result, "Item deleted successfully");
 });

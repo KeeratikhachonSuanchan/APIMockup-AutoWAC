@@ -198,7 +198,7 @@ export const swaggerSpec = {
     "/api/wac-log/export": {
       post: {
         tags: ["Transaction Log"],
-        summary: "Export Transaction Log เป็นไฟล์ Excel",
+        summary: "Export Transaction Log เป็นไฟล์ CSV",
         parameters: [{ $ref: "#/components/parameters/UserId" }],
         requestBody: {
           required: true,
@@ -215,9 +215,9 @@ export const swaggerSpec = {
         },
         responses: {
           200: {
-            description: "ไฟล์ Excel (.xlsx)",
+            description: "ไฟล์ CSV (.csv)",
             content: {
-              "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {
+              "text/csv": {
                 schema: { type: "string", format: "binary" },
               },
             },

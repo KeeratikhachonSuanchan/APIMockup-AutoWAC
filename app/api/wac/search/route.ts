@@ -31,7 +31,7 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
   const { data, pagination } = paginate(filtered, paginationInput);
 
   const items = data.map((item, index) => {
-    const { timestamp: _, ...rest } = item;
+    const { timestamp: _, tempVariableCost: __, ...rest } = item;
     return { ...rest, rowNo: pagination.offset + index + 1 };
   });
 
