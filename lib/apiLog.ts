@@ -1,3 +1,4 @@
+import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { formatTimestamp } from "./utils";
 
@@ -38,7 +39,16 @@ export function withApiLog(handler: RouteHandler): RouteHandler {
       if (text) requestBody = text;
     } catch { /* no body */ }
 
-    const response = await handler(req, ctx);
+    let response: Response;
+    try {
+      response = await handler(req, ctx);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Internal Server Error";
+      response = NextResponse.json(
+        { success: false, message, data: null, error: message },
+        { status: 500 }
+      );
+    }
 
     const resClone = response.clone();
     let responseBody: string | null = null;
