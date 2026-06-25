@@ -1,7 +1,10 @@
 import type { NextRequest } from "next/server";
-import { wacBodyLogItems } from "@/lib/mockData";
+import { db } from "@/lib/db";
+import { wacBodyLogItems } from "@/lib/schema";
+import { eq } from "drizzle-orm";
 import { successResponse, errorResponse } from "@/lib/response";
 import { withApiLog } from "@/lib/apiLog";
+import { formatTimestamp } from "@/lib/utils";
 
 export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
   const body = await request.json();
@@ -16,13 +19,23 @@ export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
     return errorResponse(`status must be one of: ${validStatuses.join(", ")}`, 400);
   }
 
-  const log = wacBodyLogItems.find((i) => i.requestNo === requestNo);
+  const [updated] = await db
+    .update(wacBodyLogItems)
+    .set({ status })
+    .where(eq(wacBodyLogItems.requestNo, requestNo))
+    .returning();
 
-  if (!log) {
+  if (!updated) {
     return errorResponse(`Log with requestNo ${requestNo} not found`, 404);
   }
 
-  log.status = status;
+  const result = {
+    ...updated,
+    timestamp: formatTimestamp(new Date(updated.timestamp)),
+    rawWAC: Number(updated.rawWAC),
+    newUnitCost: Number(updated.newUnitCost),
+    variableCost: Number(updated.variableCost),
+  };
 
-  return successResponse(log, "Status updated successfully");
+  return successResponse(result, "Status updated successfully");
 });

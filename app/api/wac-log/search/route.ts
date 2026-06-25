@@ -1,9 +1,12 @@
 import type { NextRequest } from "next/server";
-import { wacBodyLogItems } from "@/lib/mockData";
+import { db } from "@/lib/db";
+import { wacBodyLogItems } from "@/lib/schema";
+import { or, ilike, gte, lte, desc, and, type SQL } from "drizzle-orm";
 import { paginate } from "@/lib/pagination";
 import { successResponse } from "@/lib/response";
 import type { WACLogFilter, PaginationInput } from "@/lib/types";
 import { withApiLog } from "@/lib/apiLog";
+import { formatTimestamp } from "@/lib/utils";
 
 export const POST = withApiLog(async function POST(request: NextRequest) {
   const body: { filter?: WACLogFilter; pagination?: PaginationInput } =
@@ -18,47 +21,70 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
   const keyword = searchKeyword.toLowerCase();
   const itemKeyword = itemSearchKeyword.toLowerCase();
 
-  let filtered = [...wacBodyLogItems];
+  const conditions: SQL[] = [];
 
   if (keyword) {
-    filtered = filtered.filter(
-      (item) =>
-        item.requestNo.toLowerCase().includes(keyword) ||
-        item.rawCode.toLowerCase().includes(keyword) ||
-        item.rawName.toLowerCase().includes(keyword) ||
-        item.dcCuttingCode.toLowerCase().includes(keyword) ||
-        item.dcName.toLowerCase().includes(keyword) ||
-        item.supplierCode.toLowerCase().includes(keyword) ||
-        item.supplierName.toLowerCase().includes(keyword) ||
-        item.poNo.toLowerCase().includes(keyword) ||
-        item.status.toLowerCase().includes(keyword)
+    conditions.push(
+      or(
+        ilike(wacBodyLogItems.requestNo, `%${keyword}%`),
+        ilike(wacBodyLogItems.rawCode, `%${keyword}%`),
+        ilike(wacBodyLogItems.rawName, `%${keyword}%`),
+        ilike(wacBodyLogItems.dcCuttingCode, `%${keyword}%`),
+        ilike(wacBodyLogItems.dcName, `%${keyword}%`),
+        ilike(wacBodyLogItems.supplierCode, `%${keyword}%`),
+        ilike(wacBodyLogItems.supplierName, `%${keyword}%`),
+        ilike(wacBodyLogItems.poNo, `%${keyword}%`),
+        ilike(wacBodyLogItems.status, `%${keyword}%`)
+      )!
     );
   }
 
   if (itemKeyword) {
-    filtered = filtered.filter(
-      (item) =>
-        item.rawCode.toLowerCase().includes(itemKeyword) ||
-        item.rawName.toLowerCase().includes(itemKeyword) ||
-        item.dcCuttingCode.toLowerCase().includes(itemKeyword) ||
-        item.dcName.toLowerCase().includes(itemKeyword)
+    conditions.push(
+      or(
+        ilike(wacBodyLogItems.rawCode, `%${itemKeyword}%`),
+        ilike(wacBodyLogItems.rawName, `%${itemKeyword}%`),
+        ilike(wacBodyLogItems.dcCuttingCode, `%${itemKeyword}%`),
+        ilike(wacBodyLogItems.dcName, `%${itemKeyword}%`)
+      )!
     );
   }
 
   if (dateFrom) {
-    const from = new Date(dateFrom);
-    filtered = filtered.filter((item) => new Date(item.timestamp) >= from);
+    conditions.push(gte(wacBodyLogItems.timestamp, new Date(dateFrom)));
   }
 
   if (dateTo) {
     const to = new Date(dateTo);
     to.setHours(23, 59, 59, 999);
-    filtered = filtered.filter((item) => new Date(item.timestamp) <= to);
+    conditions.push(lte(wacBodyLogItems.timestamp, to));
   }
 
-  filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
 
-  const { data, pagination } = paginate(filtered, paginationInput);
+  const rows = await db
+    .select()
+    .from(wacBodyLogItems)
+    .where(whereClause)
+    .orderBy(desc(wacBodyLogItems.timestamp));
+
+  const mapped = rows.map((item) => ({
+    requestNo: item.requestNo,
+    timestamp: formatTimestamp(new Date(item.timestamp)),
+    rawCode: item.rawCode,
+    rawName: item.rawName,
+    dcCuttingCode: item.dcCuttingCode,
+    dcName: item.dcName,
+    supplierCode: item.supplierCode,
+    supplierName: item.supplierName,
+    poNo: item.poNo,
+    rawWAC: Number(item.rawWAC),
+    newUnitCost: Number(item.newUnitCost),
+    variableCost: Number(item.variableCost),
+    status: item.status,
+  }));
+
+  const { data, pagination } = paginate(mapped, paginationInput);
 
   const items = data.map((item, index) => ({
     ...item,

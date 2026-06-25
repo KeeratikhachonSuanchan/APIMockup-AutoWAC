@@ -1,39 +1,59 @@
 import type { NextRequest } from "next/server";
-import { wacBodyItems } from "@/lib/mockData";
+import { db } from "@/lib/db";
+import { wacBodyItems } from "@/lib/schema";
+import { or, ilike, desc } from "drizzle-orm";
 import { paginate } from "@/lib/pagination";
 import { successResponse } from "@/lib/response";
 import type { WACFilter, PaginationInput } from "@/lib/types";
 import { withApiLog } from "@/lib/apiLog";
+import { formatTimestamp } from "@/lib/utils";
 
 export const POST = withApiLog(async function POST(request: NextRequest) {
   const body: { filter?: WACFilter; pagination?: PaginationInput } =
     await request.json();
   const { filter = {}, pagination: paginationInput = {} } = body;
-  const searchKeyword = !filter.searchKeyword || filter.searchKeyword === "null" ? "" : filter.searchKeyword;
+  const searchKeyword =
+    !filter.searchKeyword || filter.searchKeyword === "null"
+      ? ""
+      : filter.searchKeyword;
 
   const keyword = searchKeyword.toLowerCase();
 
-  let filtered = [...wacBodyItems];
+  let query = db
+    .select()
+    .from(wacBodyItems)
+    .orderBy(desc(wacBodyItems.timestamp));
 
-  if (keyword) {
-    filtered = filtered.filter(
-      (item) =>
-        item.rawCode.toLowerCase().includes(keyword) ||
-        item.rawName.toLowerCase().includes(keyword) ||
-        item.dcCuttingCode.toLowerCase().includes(keyword) ||
-        item.dcName.toLowerCase().includes(keyword) ||
-        item.supplierCode.toLowerCase().includes(keyword)
-    );
-  }
+  const rows = keyword
+    ? await query.where(
+        or(
+          ilike(wacBodyItems.rawCode, `%${keyword}%`),
+          ilike(wacBodyItems.rawName, `%${keyword}%`),
+          ilike(wacBodyItems.dcCuttingCode, `%${keyword}%`),
+          ilike(wacBodyItems.dcName, `%${keyword}%`),
+          ilike(wacBodyItems.supplierCode, `%${keyword}%`)
+        )
+      )
+    : await query;
 
-  filtered.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+  const mapped = rows.map((item) => ({
+    id: item.id,
+    rawCode: item.rawCode,
+    rawName: item.rawName,
+    dcCuttingCode: item.dcCuttingCode,
+    dcName: item.dcName,
+    supplierCode: item.supplierCode,
+    rawWAC: Number(item.rawWAC),
+    newUnitCost: Number(item.newUnitCost),
+    variableCost: Number(item.variableCost),
+  }));
 
-  const { data, pagination } = paginate(filtered, paginationInput);
+  const { data, pagination } = paginate(mapped, paginationInput);
 
-  const items = data.map((item, index) => {
-    const { timestamp: _, tempVariableCost: __, ...rest } = item;
-    return { ...rest, rowNo: pagination.offset + index + 1 };
-  });
+  const items = data.map((item, index) => ({
+    ...item,
+    rowNo: pagination.offset + index + 1,
+  }));
 
   return successResponse({
     items,

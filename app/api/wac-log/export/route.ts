@@ -1,7 +1,10 @@
 import type { NextRequest } from "next/server";
-import { wacBodyLogItems } from "@/lib/mockData";
+import { db } from "@/lib/db";
+import { wacBodyLogItems } from "@/lib/schema";
+import { or, ilike, gte, lte, desc, and, type SQL } from "drizzle-orm";
 import type { WACLogFilter } from "@/lib/types";
 import { withApiLog } from "@/lib/apiLog";
+import { formatTimestamp } from "@/lib/utils";
 
 const CSV_HEADERS = [
   "Request No.", "Timestamp", "RAW code", "RAW name",
@@ -9,13 +12,6 @@ const CSV_HEADERS = [
   "PO No.", "Raw WAC", "New Unit Cost", "Variable cost",
   "Status",
 ];
-
-const CSV_KEYS = [
-  "requestNo", "timestamp", "rawCode", "rawName",
-  "dcCuttingCode", "dcName", "supplierCode", "supplierName",
-  "poNo", "rawWAC", "newUnitCost", "variableCost",
-  "status",
-] as const;
 
 function escapeCsv(value: unknown): string {
   const str = String(value ?? "");
@@ -44,44 +40,69 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
   const keyword = searchKeyword.toLowerCase();
   const itemKeyword = itemSearchKeyword.toLowerCase();
 
-  let filtered = [...wacBodyLogItems];
+  const conditions: SQL[] = [];
 
   if (keyword) {
-    filtered = filtered.filter(
-      (item) =>
-        item.requestNo.toLowerCase().includes(keyword) ||
-        item.supplierCode.toLowerCase().includes(keyword) ||
-        item.supplierName.toLowerCase().includes(keyword) ||
-        item.poNo.toLowerCase().includes(keyword) ||
-        item.status.toLowerCase().includes(keyword)
+    conditions.push(
+      or(
+        ilike(wacBodyLogItems.requestNo, `%${keyword}%`),
+        ilike(wacBodyLogItems.supplierCode, `%${keyword}%`),
+        ilike(wacBodyLogItems.supplierName, `%${keyword}%`),
+        ilike(wacBodyLogItems.poNo, `%${keyword}%`),
+        ilike(wacBodyLogItems.status, `%${keyword}%`)
+      )!
     );
   }
 
   if (itemKeyword) {
-    filtered = filtered.filter(
-      (item) =>
-        item.rawCode.toLowerCase().includes(itemKeyword) ||
-        item.rawName.toLowerCase().includes(itemKeyword) ||
-        item.dcCuttingCode.toLowerCase().includes(itemKeyword) ||
-        item.dcName.toLowerCase().includes(itemKeyword)
+    conditions.push(
+      or(
+        ilike(wacBodyLogItems.rawCode, `%${itemKeyword}%`),
+        ilike(wacBodyLogItems.rawName, `%${itemKeyword}%`),
+        ilike(wacBodyLogItems.dcCuttingCode, `%${itemKeyword}%`),
+        ilike(wacBodyLogItems.dcName, `%${itemKeyword}%`)
+      )!
     );
   }
 
   if (dateFrom) {
-    const from = new Date(dateFrom);
-    filtered = filtered.filter((item) => new Date(item.timestamp) >= from);
+    conditions.push(gte(wacBodyLogItems.timestamp, new Date(dateFrom)));
   }
 
   if (dateTo) {
     const to = new Date(dateTo);
     to.setHours(23, 59, 59, 999);
-    filtered = filtered.filter((item) => new Date(item.timestamp) <= to);
+    conditions.push(lte(wacBodyLogItems.timestamp, to));
   }
 
-  const rows = filtered.map((item) =>
-    CSV_KEYS.map((key) => escapeCsv(item[key])).join(",")
-  );
-  const csv = "﻿" + [CSV_HEADERS.join(","), ...rows].join("\n");
+  const whereClause = conditions.length > 0 ? and(...conditions) : undefined;
+
+  const rows = await db
+    .select()
+    .from(wacBodyLogItems)
+    .where(whereClause)
+    .orderBy(desc(wacBodyLogItems.timestamp));
+
+  const csvRows = rows.map((item) => {
+    const values = [
+      item.requestNo,
+      formatTimestamp(new Date(item.timestamp)),
+      item.rawCode,
+      item.rawName,
+      item.dcCuttingCode,
+      item.dcName,
+      item.supplierCode,
+      item.supplierName,
+      item.poNo,
+      Number(item.rawWAC),
+      Number(item.newUnitCost),
+      Number(item.variableCost),
+      item.status,
+    ];
+    return values.map((v) => escapeCsv(v)).join(",");
+  });
+
+  const csv = "﻿" + [CSV_HEADERS.join(","), ...csvRows].join("\n");
 
   return new Response(csv, {
     headers: {

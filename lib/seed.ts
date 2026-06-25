@@ -1,9 +1,9 @@
+import { config } from "dotenv";
+config({ path: ".env.local" });
+
 import { neon } from "@neondatabase/serverless";
 import { drizzle } from "drizzle-orm/neon-http";
-import { wacBodyItems, wacBodyLogItems } from "@/lib/schema";
-import { successResponse } from "@/lib/response";
-import { withApiLog } from "@/lib/apiLog";
-import { formatDateStr } from "@/lib/utils";
+import { wacBodyItems, wacBodyLogItems } from "./schema";
 
 const TOTAL = 90;
 
@@ -66,12 +66,15 @@ function formatTs(date: Date): string {
   return `${y}${m}${d}`;
 }
 
-export const POST = withApiLog(async function POST() {
+async function seed() {
   const sqlClient = neon(process.env.DATABASE_URL!);
-  const resetDb = drizzle(sqlClient);
+  const db = drizzle(sqlClient);
 
-  await resetDb.delete(wacBodyLogItems);
-  await resetDb.delete(wacBodyItems);
+  console.log("Clearing existing data...");
+  await db.delete(wacBodyLogItems);
+  await db.delete(wacBodyItems);
+
+  console.log("Resetting sequence...");
   await sqlClient`ALTER SEQUENCE wac_body_items_id_seq RESTART WITH 1`;
 
   const baseDate = new Date("2026-05-14T10:00:00+07:00");
@@ -120,8 +123,16 @@ export const POST = withApiLog(async function POST() {
     });
   }
 
-  await resetDb.insert(wacBodyItems).values(wacRows);
-  await resetDb.insert(wacBodyLogItems).values(logRows);
+  console.log(`Inserting ${TOTAL} WAC items...`);
+  await db.insert(wacBodyItems).values(wacRows);
 
-  return successResponse(null, "Data reset to initial state");
+  console.log(`Inserting ${TOTAL} log items...`);
+  await db.insert(wacBodyLogItems).values(logRows);
+
+  console.log("Seed complete!");
+}
+
+seed().catch((err) => {
+  console.error("Seed failed:", err);
+  process.exit(1);
 });
