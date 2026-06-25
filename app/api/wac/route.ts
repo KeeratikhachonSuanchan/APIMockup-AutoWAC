@@ -42,7 +42,6 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
     newUnitCost: rawWAC,
     variableCost: 0,
     tempVariableCost: 0,
-    isEdit: false,
   };
 
   wacBodyItems.push(newItem);

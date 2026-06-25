@@ -125,7 +125,6 @@ function buildInitialData() {
       newUnitCost,
       variableCost: vc,
       tempVariableCost: 0,
-      isEdit: false,
     });
     const dateStr = formatDateStr(ts);
     const seq = String(i + 1).padStart(6, "0");

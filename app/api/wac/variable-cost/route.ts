@@ -25,7 +25,6 @@ export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
   item.tempVariableCost = item.variableCost;
   item.variableCost = variableCost;
   item.newUnitCost = Math.round((item.rawWAC + variableCost) * 100) / 100;
-  item.isEdit = true;
 
   const existingLog = wacBodyLogItems.find((l) => l.supplierCode === item.supplierCode && l.supplierName);
   const supplierName = existingLog?.supplierName ?? "";

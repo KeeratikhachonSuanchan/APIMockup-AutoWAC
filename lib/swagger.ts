@@ -10,7 +10,6 @@ const wacBodyExample = {
   newUnitCost: 146.6,
   variableCost: 4.1,
   tempVariableCost: 4.1,
-  isEdit: false,
 };
 
 const wacBodyLogExample = {
@@ -315,7 +314,6 @@ export const swaggerSpec = {
           newUnitCost: { type: "number", example: 146.6 },
           variableCost: { type: "number", example: 4.1 },
           tempVariableCost: { type: "number", example: 4.1 },
-          isEdit: { type: "boolean", example: false },
         },
       },
       WACCreateInput: {

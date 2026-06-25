@@ -10,7 +10,6 @@ export interface WACBodyItem {
   newUnitCost: number;
   variableCost: number;
   tempVariableCost: number;
-  isEdit: boolean;
 }
 
 export interface WACBodyLogItem {
