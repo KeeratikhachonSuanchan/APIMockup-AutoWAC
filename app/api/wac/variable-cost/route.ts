@@ -28,9 +28,8 @@ export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
     return errorResponse(`Item with id ${id} not found`, 404);
   }
 
-  const oldWac = Number(existing.rawWAC);
-  const newWac = Math.round((oldWac + (Math.random() * 10 - 5)) * 100) / 100;
-  const newUnitCost = Math.round((newWac + variableCost) * 100) / 100;
+  const rawWAC = Number(existing.rawWAC);
+  const newUnitCost = Math.round((rawWAC + variableCost) * 100) / 100;
 
   const [updated] = await db
     .update(wacBodyItems)
@@ -56,8 +55,8 @@ export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
   const seq = String(Number(countResult[0].count) + 1).padStart(6, "0");
   const requestNo = `WAC_${formatDateStr()}${seq}`;
 
-  const oldCost = Math.round((oldWac + variableCost) * 100) / 100;
-  const newCost = Math.round((newWac + variableCost) * 100) / 100;
+  const oldVC = Number(existing.variableCost);
+  const oldCost = Math.round((rawWAC + oldVC) * 100) / 100;
 
   await db.insert(wacBodyLogItems).values({
     requestNo,
@@ -69,11 +68,11 @@ export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
     supplierCode: updated.supplierCode,
     supplierName,
     poNo,
-    oldWac: String(oldWac),
-    newWac: String(newWac),
+    oldWac: String(rawWAC),
+    newWac: String(rawWAC),
     variableCost: updated.variableCost,
     oldCost: String(oldCost),
-    newCost: String(newCost),
+    newCost: String(newUnitCost),
     status: "success",
   });
 
