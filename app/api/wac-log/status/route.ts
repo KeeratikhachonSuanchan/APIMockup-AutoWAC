@@ -39,11 +39,11 @@ export const PATCH = withApiLog(async function PATCH(request: NextRequest) {
     supplierCode: updated.supplierCode,
     supplierName: updated.supplierName,
     poNo: updated.poNo,
-    oldWac: Number(updated.oldWac),
-    newWac: Number(updated.newWac),
+    rawWAC: Number(updated.oldWac),
+    newWAC: Number(updated.newWac),
     variableCost: Number(updated.variableCost),
     oldCost: Number(updated.oldCost),
-    newCost: Number(updated.newCost),
+    newUnitCost: Number(updated.newCost),
     status: updated.status,
   };
 
