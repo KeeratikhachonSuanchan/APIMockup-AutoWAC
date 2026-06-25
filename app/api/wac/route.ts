@@ -26,7 +26,7 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
     );
   }
 
-  const oldWAC = Math.round((Math.random() * 400 + 50) * 100) / 100;
+  const rawWAC = Math.round((Math.random() * 400 + 50) * 100) / 100;
 
   const timestamp = formatTimestamp();
 
@@ -38,12 +38,10 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
     dcCuttingCode: dcCuttingCode ?? "",
     dcName: dcName ?? "",
     supplierCode: supplierCode ?? "",
-    oldWAC,
-    newWAC: oldWAC,
+    rawWAC,
+    newUnitCost: rawWAC,
     variableCost: 0,
     tempVariableCost: 0,
-    oldCost: oldWAC,
-    newCost: oldWAC,
     isEdit: false,
   };
 

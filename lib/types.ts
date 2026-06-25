@@ -6,12 +6,10 @@ export interface WACBodyItem {
   dcCuttingCode: string;
   dcName: string;
   supplierCode: string;
-  oldWAC: number;
-  newWAC: number;
+  rawWAC: number;
+  newUnitCost: number;
   variableCost: number;
   tempVariableCost: number;
-  oldCost: number;
-  newCost: number;
   isEdit: boolean;
 }
 
@@ -25,11 +23,9 @@ export interface WACBodyLogItem {
   supplierCode: string;
   supplierName: string;
   poNo: string;
-  oldWAC: number;
-  newWAC: number;
+  rawWAC: number;
+  newUnitCost: number;
   variableCost: number;
-  oldCost: number;
-  newCost: number;
   status: "success" | "pending" | "failed";
 }
 

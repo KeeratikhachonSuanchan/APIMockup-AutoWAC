@@ -6,12 +6,10 @@ const wacBodyExample = {
   dcCuttingCode: "837744",
   dcName: "ARO ปลากะพงขาวแล่แช่แข็ง ไซส์ M กก.ละ",
   supplierCode: "20047",
-  oldWAC: 142.5,
-  newWAC: 145,
+  rawWAC: 142.5,
+  newUnitCost: 146.6,
   variableCost: 4.1,
   tempVariableCost: 4.1,
-  oldCost: 146.6,
-  newCost: 149.1,
   isEdit: false,
 };
 
@@ -25,11 +23,9 @@ const wacBodyLogExample = {
   supplierCode: "20047",
   supplierName: "Thai Union Frozen",
   poNo: "PO-2605-00482",
-  oldWAC: 142.5,
-  newWAC: 145,
+  rawWAC: 142.5,
+  newUnitCost: 146.6,
   variableCost: 4.1,
-  oldCost: 146.6,
-  newCost: 149.1,
   status: "success",
 };
 
@@ -55,6 +51,7 @@ export const swaggerSpec = {
       post: {
         tags: ["Auto WAC"],
         summary: "ดึงข้อมูล Auto WAC",
+        parameters: [{ $ref: "#/components/parameters/UserId" }],
         requestBody: {
           required: true,
           content: {
@@ -85,6 +82,7 @@ export const swaggerSpec = {
       post: {
         tags: ["Auto WAC"],
         summary: "เพิ่มข้อมูล WAC",
+        parameters: [{ $ref: "#/components/parameters/UserId" }],
         requestBody: {
           required: true,
           content: {
@@ -109,6 +107,7 @@ export const swaggerSpec = {
         tags: ["Auto WAC"],
         summary: "ลบข้อมูล WAC",
         parameters: [
+          { $ref: "#/components/parameters/UserId" },
           {
             name: "wacId",
             in: "query",
@@ -136,6 +135,7 @@ export const swaggerSpec = {
       patch: {
         tags: ["Auto WAC"],
         summary: "แก้ไข VariableCost",
+        parameters: [{ $ref: "#/components/parameters/UserId" }],
         requestBody: {
           required: true,
           content: {
@@ -169,6 +169,7 @@ export const swaggerSpec = {
       post: {
         tags: ["Transaction Log"],
         summary: "ดึงข้อมูล Transaction Log",
+        parameters: [{ $ref: "#/components/parameters/UserId" }],
         requestBody: {
           required: true,
           content: {
@@ -199,6 +200,7 @@ export const swaggerSpec = {
       post: {
         tags: ["Transaction Log"],
         summary: "Export Transaction Log เป็นไฟล์ Excel",
+        parameters: [{ $ref: "#/components/parameters/UserId" }],
         requestBody: {
           required: true,
           content: {
@@ -226,6 +228,15 @@ export const swaggerSpec = {
     },
   },
   components: {
+    parameters: {
+      UserId: {
+        name: "user_id",
+        in: "header",
+        required: true,
+        schema: { type: "string" },
+        description: "user_id",
+      },
+    },
     schemas: {
       PaginationInput: {
         type: "object",
@@ -300,12 +311,10 @@ export const swaggerSpec = {
           dcCuttingCode: { type: "string", example: "837744" },
           dcName: { type: "string", example: "ARO ปลากะพงขาวแล่แช่แข็ง ไซส์ M กก.ละ" },
           supplierCode: { type: "string", example: "20047" },
-          oldWAC: { type: "number", example: 142.5 },
-          newWAC: { type: "number", example: 145 },
+          rawWAC: { type: "number", example: 142.5 },
+          newUnitCost: { type: "number", example: 146.6 },
           variableCost: { type: "number", example: 4.1 },
           tempVariableCost: { type: "number", example: 4.1 },
-          oldCost: { type: "number", example: 146.6 },
-          newCost: { type: "number", example: 149.1 },
           isEdit: { type: "boolean", example: false },
         },
       },
@@ -333,11 +342,9 @@ export const swaggerSpec = {
           supplierCode: { type: "string", example: "20047" },
           supplierName: { type: "string", example: "Thai Union Frozen" },
           poNo: { type: "string", example: "PO-2605-00482" },
-          oldWAC: { type: "number", example: 142.5 },
-          newWAC: { type: "number", example: 145 },
+          rawWAC: { type: "number", example: 142.5 },
+          newUnitCost: { type: "number", example: 146.6 },
           variableCost: { type: "number", example: 4.1 },
-          oldCost: { type: "number", example: 146.6 },
-          newCost: { type: "number", example: 149.1 },
           status: { type: "string", enum: ["success", "pending", "failed"], example: "success" },
         },
       },

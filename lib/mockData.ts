@@ -36,11 +36,9 @@ export function addTransactionLog(
     supplierCode: item.supplierCode,
     supplierName,
     poNo,
-    oldWAC: item.oldWAC,
-    newWAC: item.newWAC,
+    rawWAC: item.rawWAC,
+    newUnitCost: item.newUnitCost,
     variableCost: item.variableCost,
-    oldCost: item.oldCost,
-    newCost: item.newCost,
     status,
   };
   wacBodyLogItems.unshift(log);
@@ -108,11 +106,9 @@ function buildInitialData() {
     const p = products[i % products.length];
     const s = suppliers[i % suppliers.length];
     const priceShift = Math.floor(i / products.length) * 2.5;
-    const oldWAC = r2(p.baseWAC + priceShift);
+    const rawWAC = r2(p.baseWAC + priceShift);
     const vc = r2(p.vc);
-    const newWAC = r2(oldWAC + vc);
-    const oldCost = newWAC;
-    const newCost = newWAC;
+    const newUnitCost = r2(rawWAC + vc);
 
     const ts = new Date(baseDate.getTime() - i * 45 * 60 * 1000);
     const tsStr = formatTimestamp(ts);
@@ -125,12 +121,10 @@ function buildInitialData() {
       dcCuttingCode: p.dcCuttingCode,
       dcName: p.dcName,
       supplierCode: s.code,
-      oldWAC,
-      newWAC,
+      rawWAC,
+      newUnitCost,
       variableCost: vc,
       tempVariableCost: 0,
-      oldCost,
-      newCost,
       isEdit: false,
     });
     const dateStr = formatDateStr(ts);
@@ -146,11 +140,9 @@ function buildInitialData() {
       supplierCode: s.code,
       supplierName: s.name,
       poNo: `PO-2605-${String(500 - i).padStart(5, "0")}`,
-      oldWAC,
-      newWAC,
+      rawWAC,
+      newUnitCost,
       variableCost: vc,
-      oldCost,
-      newCost,
       status: statuses[i % statuses.length],
     });
   }

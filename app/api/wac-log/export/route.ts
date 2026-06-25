@@ -6,15 +6,15 @@ import { withApiLog } from "@/lib/apiLog";
 const CSV_HEADERS = [
   "Request No.", "Timestamp", "RAW code", "RAW name",
   "DC Cutting code", "DC name", "Supplier code", "Supplier name",
-  "PO No.", "Old WAC", "New WAC", "Variable cost",
-  "Old cost", "New cost", "Status",
+  "PO No.", "Raw WAC", "New Unit Cost", "Variable cost",
+  "Status",
 ];
 
 const CSV_KEYS = [
   "requestNo", "timestamp", "rawCode", "rawName",
   "dcCuttingCode", "dcName", "supplierCode", "supplierName",
-  "poNo", "oldWAC", "newWAC", "variableCost",
-  "oldCost", "newCost", "status",
+  "poNo", "rawWAC", "newUnitCost", "variableCost",
+  "status",
 ] as const;
 
 function escapeCsv(value: unknown): string {
