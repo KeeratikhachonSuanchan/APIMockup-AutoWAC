@@ -78,10 +78,7 @@ export const POST = withApiLog(async function POST(request: NextRequest) {
     supplierCode: item.supplierCode,
     supplierName: item.supplierName,
     poNo: item.poNo,
-    rawWAC: Number(item.oldWac),
-    newWAC: Number(item.newWac),
     variableCost: Number(item.variableCost),
-    oldCost: Number(item.oldCost),
     newUnitCost: Number(item.newCost),
     status: item.status,
   }));
